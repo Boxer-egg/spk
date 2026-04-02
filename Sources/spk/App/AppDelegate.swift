@@ -195,11 +195,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                     case .success(let refined):
                         HUDViewModel.shared.text = refined
                         HUDViewModel.shared.state = .success
-                        ClipboardManager.shared.pasteText(refined)
+                        ClipboardManager.shared.pasteText(refined, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
                     case .failure(let error):
                         print("LLM Error: \(error)")
                         HUDViewModel.shared.state = .error
-                        ClipboardManager.shared.pasteText(text)
+                        ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
                     }
                     
                     // Delay hiding to let user see the final result
@@ -213,7 +213,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             }
         } else {
             HUDViewModel.shared.state = .success
-            ClipboardManager.shared.pasteText(text)
+            ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 HUDViewModel.shared.isVisible = false
                 HUDPanel.shared.hide()

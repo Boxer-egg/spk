@@ -38,8 +38,13 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(triggerKey, forKey: "triggerKey") }
     }
 
+    @Published var isCopyToClipboardEnabled: Bool {
+        didSet { defaults.set(isCopyToClipboardEnabled, forKey: "isCopyToClipboardEnabled") }
+    }
+
     private init() {
         self.isLLMEnabled = defaults.bool(forKey: "isLLMEnabled")
+        self.isCopyToClipboardEnabled = defaults.bool(forKey: "isCopyToClipboardEnabled")
         self.selectedLanguage = Language(rawValue: defaults.string(forKey: "selectedLanguage") ?? "zh-CN") ?? .zhCN
         self.apiBaseURL = defaults.string(forKey: "apiBaseURL") ?? "https://api.openai.com/v1"
         self.apiKey = defaults.string(forKey: "apiKey") ?? ""

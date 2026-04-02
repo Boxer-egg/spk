@@ -4,23 +4,40 @@ import Carbon
 class ClipboardManager {
     static let shared = ClipboardManager()
     
-    func pasteText(_ text: String) {
+    func pasteText(_ text: String, keepInClipboard: Bool) {
         let pasteboard = NSPasteboard.general
-        let originalItems = pasteboard.pasteboardItems
+        let originalItems = pasteboard.pasteboardItems?.map { item in
+            let types = item.types
+            let dataMap = types.compactMap { type -> (NSPasteboard.PasteboardType, Data)? in
+                if let data = item.data(forType: type) {
+                    return (type, data)
+                }
+                return nil
+            }
+            return dataMap
+        }
         
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
         
-        // Handle CJK switching if needed (optional implementation for now)
-        // simulateCommandV()
-        
         DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) {
             self.simulateCommandV()
             
-            // Restore original pasteboard content after a short delay
-            DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-                if let _ = originalItems {
-                    // This is a simplification; full restoration is more complex
+            // Only restore if keepInClipboard is false
+            if !keepInClipboard {
+                DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+                    pasteboard.clearContents()
+                    if let items = originalItems {
+                        var newItems: [NSPasteboardItem] = []
+                        for itemData in items {
+                            let newItem = NSPasteboardItem()
+                            for (type, data) in itemData {
+                                newItem.setData(data, forType: type)
+                            }
+                            newItems.append(newItem)
+                        }
+                        pasteboard.writeObjects(newItems)
+                    }
                 }
             }
         }

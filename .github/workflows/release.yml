@@ -1,0 +1,24 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: make build package
+
+      - name: Archive
+        run: |
+          zip -r spk.zip spk.app
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: spk.zip

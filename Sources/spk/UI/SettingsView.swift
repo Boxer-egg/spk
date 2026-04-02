@@ -18,6 +18,13 @@ struct SettingsView: View {
                         Text("When enabled, your speech will be refined by the selected AI model before being pasted.")
                             .font(.caption)
                             .foregroundColor(.secondary)
+                        
+                        Divider()
+                        
+                        Toggle("Copy to Clipboard", isOn: $settings.isCopyToClipboardEnabled)
+                        Text("When enabled, the final output will be copied to your clipboard automatically.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
                 }
                 .tabItem {
