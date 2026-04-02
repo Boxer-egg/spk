@@ -1,0 +1,79 @@
+{
+  "": {
+    "dependencies": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/spk.d",
+    "object": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/spk.o",
+    "swift-dependencies": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/master.swiftdeps"
+  },
+  "/Users/box/new/Mac/Sources/spk/App/AppDelegate.swift": {
+    "object": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/AppDelegate.swift.o",
+    "swiftmodule": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/AppDelegate~partial.swiftmodule",
+    "swift-dependencies": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/AppDelegate.swiftdeps",
+    "diagnostics": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/AppDelegate.dia"
+  },
+  "/Users/box/new/Mac/Sources/spk/Managers/ClipboardManager.swift": {
+    "object": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/ClipboardManager.swift.o",
+    "swiftmodule": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/ClipboardManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/ClipboardManager.swiftdeps",
+    "diagnostics": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/ClipboardManager.dia"
+  },
+  "/Users/box/new/Mac/Sources/spk/Managers/KeyboardManager.swift": {
+    "object": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/KeyboardManager.swift.o",
+    "swiftmodule": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/KeyboardManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/KeyboardManager.swiftdeps",
+    "diagnostics": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/KeyboardManager.dia"
+  },
+  "/Users/box/new/Mac/Sources/spk/Managers/LLMManager.swift": {
+    "object": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/LLMManager.swift.o",
+    "swiftmodule": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/LLMManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/LLMManager.swiftdeps",
+    "diagnostics": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/LLMManager.dia"
+  },
+  "/Users/box/new/Mac/Sources/spk/Managers/SettingsManager.swift": {
+    "object": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SettingsManager.swift.o",
+    "swiftmodule": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SettingsManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SettingsManager.swiftdeps",
+    "diagnostics": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SettingsManager.dia"
+  },
+  "/Users/box/new/Mac/Sources/spk/Managers/SpeechManager.swift": {
+    "object": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SpeechManager.swift.o",
+    "swiftmodule": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SpeechManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SpeechManager.swiftdeps",
+    "diagnostics": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SpeechManager.dia"
+  },
+  "/Users/box/new/Mac/Sources/spk/Models/HUDViewModel.swift": {
+    "object": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDViewModel.swift.o",
+    "swiftmodule": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDViewModel.swiftdeps",
+    "diagnostics": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDViewModel.dia"
+  },
+  "/Users/box/new/Mac/Sources/spk/Models/Language.swift": {
+    "object": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/Language.swift.o",
+    "swiftmodule": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/Language~partial.swiftmodule",
+    "swift-dependencies": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/Language.swiftdeps",
+    "diagnostics": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/Language.dia"
+  },
+  "/Users/box/new/Mac/Sources/spk/UI/HUDPanel.swift": {
+    "object": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDPanel.swift.o",
+    "swiftmodule": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDPanel~partial.swiftmodule",
+    "swift-dependencies": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDPanel.swiftdeps",
+    "diagnostics": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDPanel.dia"
+  },
+  "/Users/box/new/Mac/Sources/spk/UI/HUDView.swift": {
+    "object": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDView.swift.o",
+    "swiftmodule": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDView~partial.swiftmodule",
+    "swift-dependencies": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDView.swiftdeps",
+    "diagnostics": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDView.dia"
+  },
+  "/Users/box/new/Mac/Sources/spk/UI/SettingsView.swift": {
+    "object": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SettingsView.swift.o",
+    "swiftmodule": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SettingsView~partial.swiftmodule",
+    "swift-dependencies": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SettingsView.swiftdeps",
+    "diagnostics": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SettingsView.dia"
+  },
+  "/Users/box/new/Mac/Sources/spk/UI/WaveformView.swift": {
+    "object": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/WaveformView.swift.o",
+    "swiftmodule": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/WaveformView~partial.swiftmodule",
+    "swift-dependencies": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/WaveformView.swiftdeps",
+    "diagnostics": "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/WaveformView.dia"
+  }
+}

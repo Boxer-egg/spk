@@ -1,0 +1,430 @@
+{
+  "builtTestProducts" : [
+
+  ],
+  "copyCommands" : {
+
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.spk-arm64-apple-macosx15.0-release.module" : {
+      "executable" : "/Library/Developer/CommandLineTools/usr/bin/swiftc",
+      "fileList" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/sources",
+      "importPath" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/App/AppDelegate.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/Managers/ClipboardManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/Managers/KeyboardManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/Managers/LLMManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/Managers/SettingsManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/Managers/SpeechManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/Models/HUDViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/Models/Language.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/UI/HUDPanel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/UI/HUDView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/UI/SettingsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/UI/WaveformView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/swift-version--1AB21518FC5DEDBE.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/sources"
+        }
+      ],
+      "isLibrary" : false,
+      "moduleName" : "spk",
+      "moduleOutputPath" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/Modules/spk.swiftmodule",
+      "objects" : [
+        "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/AppDelegate.swift.o",
+        "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/ClipboardManager.swift.o",
+        "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/KeyboardManager.swift.o",
+        "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/LLMManager.swift.o",
+        "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SettingsManager.swift.o",
+        "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SpeechManager.swift.o",
+        "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDViewModel.swift.o",
+        "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/Language.swift.o",
+        "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDPanel.swift.o",
+        "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDView.swift.o",
+        "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SettingsView.swift.o",
+        "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/WaveformView.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-whole-module-optimization",
+        "-num-threads",
+        "10",
+        "-serialize-diagnostics",
+        "-O",
+        "-j10",
+        "-DSWIFT_PACKAGE",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/box/new/Mac/.build/arm64-apple-macosx/release/ModuleCache",
+        "-parseable-output",
+        "-Xfrontend",
+        "-entry-point-function-name",
+        "-Xfrontend",
+        "spk_main",
+        "-color-diagnostics",
+        "-swift-version",
+        "5",
+        "-I",
+        "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+        "-L",
+        "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+        "-plugin-path",
+        "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "mac"
+      ],
+      "outputFileMapPath" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/AppDelegate.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/ClipboardManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/KeyboardManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/LLMManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SettingsManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SpeechManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/Language.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDPanel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SettingsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/WaveformView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/Modules/spk.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/box/new/Mac/Sources/spk/App/AppDelegate.swift",
+        "/Users/box/new/Mac/Sources/spk/Managers/ClipboardManager.swift",
+        "/Users/box/new/Mac/Sources/spk/Managers/KeyboardManager.swift",
+        "/Users/box/new/Mac/Sources/spk/Managers/LLMManager.swift",
+        "/Users/box/new/Mac/Sources/spk/Managers/SettingsManager.swift",
+        "/Users/box/new/Mac/Sources/spk/Managers/SpeechManager.swift",
+        "/Users/box/new/Mac/Sources/spk/Models/HUDViewModel.swift",
+        "/Users/box/new/Mac/Sources/spk/Models/Language.swift",
+        "/Users/box/new/Mac/Sources/spk/UI/HUDPanel.swift",
+        "/Users/box/new/Mac/Sources/spk/UI/HUDView.swift",
+        "/Users/box/new/Mac/Sources/spk/UI/SettingsView.swift",
+        "/Users/box/new/Mac/Sources/spk/UI/WaveformView.swift"
+      ],
+      "tempsPath" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build",
+      "wholeModuleOptimization" : true
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "spk" : [
+      "/Library/Developer/CommandLineTools/usr/bin/swiftc",
+      "-module-name",
+      "spk",
+      "-package-name",
+      "mac",
+      "-c",
+      "/Users/box/new/Mac/Sources/spk/App/AppDelegate.swift",
+      "/Users/box/new/Mac/Sources/spk/Managers/ClipboardManager.swift",
+      "/Users/box/new/Mac/Sources/spk/Managers/KeyboardManager.swift",
+      "/Users/box/new/Mac/Sources/spk/Managers/LLMManager.swift",
+      "/Users/box/new/Mac/Sources/spk/Managers/SettingsManager.swift",
+      "/Users/box/new/Mac/Sources/spk/Managers/SpeechManager.swift",
+      "/Users/box/new/Mac/Sources/spk/Models/HUDViewModel.swift",
+      "/Users/box/new/Mac/Sources/spk/Models/Language.swift",
+      "/Users/box/new/Mac/Sources/spk/UI/HUDPanel.swift",
+      "/Users/box/new/Mac/Sources/spk/UI/HUDView.swift",
+      "/Users/box/new/Mac/Sources/spk/UI/SettingsView.swift",
+      "/Users/box/new/Mac/Sources/spk/UI/WaveformView.swift",
+      "-I",
+      "/Users/box/new/Mac/.build/arm64-apple-macosx/release/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-whole-module-optimization",
+      "-num-threads",
+      "10",
+      "-serialize-diagnostics",
+      "-O",
+      "-j10",
+      "-DSWIFT_PACKAGE",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/box/new/Mac/.build/arm64-apple-macosx/release/ModuleCache",
+      "-parseable-output",
+      "-Xfrontend",
+      "-entry-point-function-name",
+      "-Xfrontend",
+      "spk_main",
+      "-color-diagnostics",
+      "-swift-version",
+      "5",
+      "-I",
+      "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+      "-L",
+      "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+      "-plugin-path",
+      "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "mac",
+      "-driver-use-frontend-path",
+      "/Library/Developer/CommandLineTools/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "spk" : [
+
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/App/AppDelegate.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/Managers/ClipboardManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/Managers/KeyboardManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/Managers/LLMManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/Managers/SettingsManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/Managers/SpeechManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/Models/HUDViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/Models/Language.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/UI/HUDPanel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/UI/HUDView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/UI/SettingsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/Sources/spk/UI/WaveformView.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/sources"
+    },
+    "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/AppDelegate.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/ClipboardManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDPanel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/HUDViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/KeyboardManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/LLMManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/Language.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SettingsManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SettingsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/SpeechManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.build/WaveformView.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/spk.product/Objects.LinkFileList"
+    },
+    "/Users/box/new/Mac/.build/arm64-apple-macosx/release/swift-version--1AB21518FC5DEDBE.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Library/Developer/CommandLineTools/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/box/new/Mac/.build/arm64-apple-macosx/release/swift-version--1AB21518FC5DEDBE.txt"
+    }
+  }
+}
