@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+    permissions:
+      contents: write  # 需要此权限来创建 releases
     steps:
       - uses: actions/checkout@v4
 
@@ -27,7 +29,18 @@ jobs:
           echo "Zip file created:"
           unzip -l spk.zip | head -20
 
+      - name: Check zip file before release
+        run: |
+          echo "Checking if spk.zip exists..."
+          ls -la spk.zip
+          echo "File size:"
+          du -h spk.zip
+          echo "Zip contents:"
+          unzip -l spk.zip | head -30
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: spk.zip
+          draft: false
+          generate_release_notes: true
