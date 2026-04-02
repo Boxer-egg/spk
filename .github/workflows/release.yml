@@ -11,9 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build
+      - name: Build and Sign
         run: |
-          make build package
+          make all
           echo "Build completed, checking spk.app structure..."
           ls -la
           ls -la spk.app/ || true
