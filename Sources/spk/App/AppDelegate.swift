@@ -98,20 +98,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         if let lang = sender.representedObject as? Language {
             SettingsManager.shared.selectedLanguage = lang
             speechManager.setLanguage(lang)
-            
-            // Update menu selection
-            if let menu = statusItem?.menu, let langMenu = menu.item(withTitle: "Language")?.submenu {
-                for item in langMenu.items {
-                    item.state = (item.representedObject as? Language == lang) ? .on : .off
-                }
-            }
+            updateMenuStates()
         }
     }
     
     @objc func toggleLLM() {
         SettingsManager.shared.isLLMEnabled.toggle()
-        if let menu = statusItem?.menu, let item = menu.item(withTitle: "LLM Correction") {
-            item.state = SettingsManager.shared.isLLMEnabled ? .on : .off
+        updateMenuStates()
+    }
+    
+    private func updateMenuStates() {
+        if let menu = statusItem?.menu {
+            // Update Language checkmarks
+            if let langMenu = menu.item(withTitle: "Language")?.submenu {
+                for item in langMenu.items {
+                    item.state = (item.representedObject as? Language == SettingsManager.shared.selectedLanguage) ? .on : .off
+                }
+            }
+            // Update LLM Toggle checkmark
+            if let llmItem = menu.item(withTitle: "LLM Correction") {
+                llmItem.state = SettingsManager.shared.isLLMEnabled ? .on : .off
+            }
         }
     }
     
@@ -129,20 +136,43 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     }
     
     // MARK: - KeyboardManagerDelegate
-    func fnKeyPressed(down: Bool) {
+    private var isRecording = false
+
+    func triggerPressed(down: Bool) {
         if down {
-            HUDViewModel.shared.reset()
-            HUDViewModel.shared.isVisible = true
-            HUDPanel.shared.show()
-            do {
-                try speechManager.startRecording()
-            } catch {
-                print("Failed to start recording: \(error)")
-                HUDViewModel.shared.state = .error
-            }
+            startRecordingProcess()
         } else {
-            speechManager.stopRecording()
+            stopRecordingProcess()
         }
+    }
+    
+    func triggerToggled() {
+        if isRecording {
+            stopRecordingProcess()
+        } else {
+            startRecordingProcess()
+        }
+    }
+    
+    private func startRecordingProcess() {
+        guard !isRecording else { return }
+        isRecording = true
+        HUDViewModel.shared.reset()
+        HUDViewModel.shared.isVisible = true
+        HUDPanel.shared.show()
+        do {
+            try speechManager.startRecording()
+        } catch {
+            print("Failed to start recording: \(error)")
+            HUDViewModel.shared.state = .error
+            isRecording = false
+        }
+    }
+    
+    private func stopRecordingProcess() {
+        guard isRecording else { return }
+        isRecording = false
+        speechManager.stopRecording()
     }
     
     // MARK: - SpeechManagerDelegate

@@ -11,8 +11,8 @@ struct WaveformView: View {
             ForEach(0..<5) { index in
                 RoundedRectangle(cornerRadius: 2)
                     .fill(Color.accentColor)
-                    .frame(width: 4, height: max(4, 24 * CGFloat(volume) * weights[index]))
-                    .animation(.spring(response: 0.2, dampingFraction: 0.5), value: volume)
+                    .frame(width: 4, height: max(4, 40 * CGFloat(volume) * weights[index]))
+                    .animation(.spring(response: 0.15, dampingFraction: 0.4), value: volume)
             }
         }
         .frame(height: 24)

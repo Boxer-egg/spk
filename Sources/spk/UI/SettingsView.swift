@@ -1,86 +1,131 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @State private var apiBaseURL: String = SettingsManager.shared.apiBaseURL
-    @State private var apiKey: String = SettingsManager.shared.apiKey
-    @State private var model: String = SettingsManager.shared.model
-    @State private var isEnabled: Bool = SettingsManager.shared.isLLMEnabled
-    @State private var systemPrompt: String = SettingsManager.shared.systemPrompt
+    @ObservedObject var settings = SettingsManager.shared
     
     @State private var testStatus: String = ""
     @State private var isTesting: Bool = false
     
-    var body: some View {
-        Form {
-            Section("LLM Refinement") {
-                Toggle("Enable LLM Correction", isOn: $isEnabled)
-                TextField("API Base URL", text: $apiBaseURL)
-                SecureField("API Key", text: $apiKey)
-                TextField("Model", text: $model)
-                
-                VStack(alignment: .leading) {
-                    Text("System Prompt")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    TextEditor(text: $systemPrompt)
-                        .frame(height: 80)
-                        .font(.system(size: 11, design: .monospaced))
-                        .padding(4)
-                        .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.secondary.opacity(0.2)))
-                }
-            }
-            
-            VStack {
-                HStack {
-                    if isTesting {
-                        ProgressView().scaleEffect(0.5).frame(width: 20, height: 20)
-                    }
-                    Text(testStatus)
-                        .font(.caption)
-                        .foregroundColor(testStatus.contains("Successful") ? .green : .red)
-                    
-                    Spacer()
-                    
-                    Button("Test Connection") {
-                        testConnection()
-                    }
-                    .disabled(isTesting || apiKey.isEmpty)
-                    
-                    Button("Save") {
-                        saveSettings()
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-            }
-            .padding(.top, 10)
-        }
-        .padding()
-        .frame(width: 450)
-    }
+    let triggerKeys = ["Fn", "Left Ctrl", "Left Option", "Right Option"]
     
-    private func saveSettings() {
-        SettingsManager.shared.apiBaseURL = apiBaseURL
-        SettingsManager.shared.apiKey = apiKey
-        SettingsManager.shared.model = model
-        SettingsManager.shared.isLLMEnabled = isEnabled
-        SettingsManager.shared.systemPrompt = systemPrompt
+    var body: some View {
+        VStack(spacing: 0) {
+            TabView {
+                // Tab 1: General
+                Form {
+                    Section("Core Features") {
+                        Toggle("Enable LLM Correction", isOn: $settings.isLLMEnabled)
+                        Text("When enabled, your speech will be refined by the selected AI model before being pasted.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .tabItem {
+                    Label("General", systemImage: "gearshape.fill")
+                }
+                .padding()
+
+                // Tab 2: API Settings
+                Form {
+                    Section("Endpoint Configuration") {
+                        TextField("API Base URL", text: $settings.apiBaseURL)
+                        SecureField("API Key", text: $settings.apiKey)
+                        TextField("Model", text: $settings.model)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack {
+                            Button(action: testConnection) {
+                                Label("Test Connection", systemImage: "bolt.horizontal.fill")
+                            }
+                            .disabled(isTesting || settings.apiKey.isEmpty)
+                            
+                            if isTesting {
+                                ProgressView().scaleEffect(0.5).frame(width: 20, height: 20)
+                            }
+                            
+                            Text(testStatus)
+                                .font(.caption)
+                                .foregroundColor(testStatus.contains("Successful") ? .green : .red)
+                        }
+                    }
+                    .padding(.top, 10)
+                }
+                .tabItem {
+                    Label("API Settings", systemImage: "network")
+                }
+                .padding()
+
+                // Tab 3: AI Prompt
+                Form {
+                    Section("Refinement Logic") {
+                        VStack(alignment: .leading) {
+                            Text("System Prompt")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            TextEditor(text: $settings.systemPrompt)
+                                .frame(minHeight: 200)
+                                .font(.system(size: 12, design: .monospaced))
+                                .padding(4)
+                                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.secondary.opacity(0.2)))
+                        }
+                    }
+                }
+                .tabItem {
+                    Label("AI Prompt", systemImage: "text.bubble.fill")
+                }
+                .padding()
+                
+                // Tab 4: Shortcuts
+                Form {
+                    Section("Interaction") {
+                        Toggle("Hold to Speak (Release to Stop)", isOn: $settings.isHoldToSpeak)
+                        
+                        Picker("Trigger Key", selection: $settings.triggerKey) {
+                            ForEach(triggerKeys, id: \.self) { key in
+                                Text(key).tag(key)
+                            }
+                        }
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Usage Hints:")
+                            .font(.headline)
+                        if settings.isHoldToSpeak {
+                            Text("• Press and hold the selected key to record.\n• Release to finish.")
+                        } else {
+                            Text("• Click the key once to start.\n• Click it again to stop.")
+                        }
+                    }
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.top, 10)
+                }
+                .tabItem {
+                    Label("Shortcuts", systemImage: "keyboard.fill")
+                }
+                .padding()
+            }
+            .frame(height: 380)
+            
+            Divider()
+            
+            HStack {
+                Spacer()
+                Text("Changes are saved automatically")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+            }
+            .padding()
+            .background(Color(NSColor.windowBackgroundColor))
+        }
+        .frame(width: 550, height: 450)
     }
     
     private func testConnection() {
         isTesting = true
         testStatus = "Testing..."
-        
-        // Temporarily save to manager for test
-        let originalPrompt = SettingsManager.shared.systemPrompt
-        let originalBase = SettingsManager.shared.apiBaseURL
-        let originalKey = SettingsManager.shared.apiKey
-        let originalModel = SettingsManager.shared.model
-        
-        SettingsManager.shared.apiBaseURL = apiBaseURL
-        SettingsManager.shared.apiKey = apiKey
-        SettingsManager.shared.model = model
-        SettingsManager.shared.systemPrompt = systemPrompt
-        SettingsManager.shared.isLLMEnabled = true
         
         LLMManager.shared.testConnection { result in
             DispatchQueue.main.async {
@@ -91,12 +136,6 @@ struct SettingsView: View {
                 case .failure(let error):
                     testStatus = "Error: \(error.localizedDescription)"
                 }
-                
-                // Restore
-                SettingsManager.shared.systemPrompt = originalPrompt
-                SettingsManager.shared.apiBaseURL = originalBase
-                SettingsManager.shared.apiKey = originalKey
-                SettingsManager.shared.model = originalModel
             }
         }
     }

@@ -1,37 +1,51 @@
 import Foundation
+import Combine
 
-class SettingsManager {
+class SettingsManager: ObservableObject {
     static let shared = SettingsManager()
     
     private let defaults = UserDefaults.standard
     
-    var apiBaseURL: String {
-        get { defaults.string(forKey: "apiBaseURL") ?? "https://api.openai.com/v1" }
-        set { defaults.set(newValue, forKey: "apiBaseURL") }
+    @Published var isLLMEnabled: Bool {
+        didSet { defaults.set(isLLMEnabled, forKey: "isLLMEnabled") }
     }
     
-    var apiKey: String {
-        get { defaults.string(forKey: "apiKey") ?? "" }
-        set { defaults.set(newValue, forKey: "apiKey") }
+    @Published var selectedLanguage: Language {
+        didSet { defaults.set(selectedLanguage.rawValue, forKey: "selectedLanguage") }
     }
     
-    var model: String {
-        get { defaults.string(forKey: "model") ?? "gpt-3.5-turbo" }
-        set { defaults.set(newValue, forKey: "model") }
+    @Published var apiBaseURL: String {
+        didSet { defaults.set(apiBaseURL, forKey: "apiBaseURL") }
     }
     
-    var systemPrompt: String {
-        get { defaults.string(forKey: "systemPrompt") ?? "You are a speech recognition correction assistant. Your task is to correct obvious speech recognition errors in the input text. Do not rewrite or polish the content if it is already correct. Return ONLY the corrected text without any explanation or preamble." }
-        set { defaults.set(newValue, forKey: "systemPrompt") }
+    @Published var apiKey: String {
+        didSet { defaults.set(apiKey, forKey: "apiKey") }
     }
     
-    var isLLMEnabled: Bool {
-        get { defaults.bool(forKey: "isLLMEnabled") }
-        set { defaults.set(newValue, forKey: "isLLMEnabled") }
+    @Published var model: String {
+        didSet { defaults.set(model, forKey: "model") }
     }
     
-    var selectedLanguage: Language {
-        get { Language(rawValue: defaults.string(forKey: "selectedLanguage") ?? "zh-CN") ?? .zhCN }
-        set { defaults.set(newValue.rawValue, forKey: "selectedLanguage") }
+    @Published var systemPrompt: String {
+        didSet { defaults.set(systemPrompt, forKey: "systemPrompt") }
+    }
+    
+    @Published var isHoldToSpeak: Bool {
+        didSet { defaults.set(isHoldToSpeak, forKey: "isHoldToSpeak") }
+    }
+    
+    @Published var triggerKey: String {
+        didSet { defaults.set(triggerKey, forKey: "triggerKey") }
+    }
+
+    private init() {
+        self.isLLMEnabled = defaults.bool(forKey: "isLLMEnabled")
+        self.selectedLanguage = Language(rawValue: defaults.string(forKey: "selectedLanguage") ?? "zh-CN") ?? .zhCN
+        self.apiBaseURL = defaults.string(forKey: "apiBaseURL") ?? "https://api.openai.com/v1"
+        self.apiKey = defaults.string(forKey: "apiKey") ?? ""
+        self.model = defaults.string(forKey: "model") ?? "gpt-3.5-turbo"
+        self.systemPrompt = defaults.string(forKey: "systemPrompt") ?? "You are a speech recognition correction assistant. Your task is to correct obvious speech recognition errors in the input text. Do not rewrite or polish the content if it is already correct. Return ONLY the corrected text without any explanation or preamble."
+        self.isHoldToSpeak = defaults.object(forKey: "isHoldToSpeak") as? Bool ?? true
+        self.triggerKey = defaults.string(forKey: "triggerKey") ?? "Fn"
     }
 }
