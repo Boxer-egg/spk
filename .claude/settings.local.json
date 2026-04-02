@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git tag:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(zip -r test-spk.zip spk.app)",
+      "Bash(unzip -l test-spk.zip)",
+      "Bash(make clean:*)",
+      "Bash(make all:*)",
+      "Bash(gh release:*)",
+      "Bash(curl -s -H \"Accept: application/vnd.github+json\" \"https://api.github.com/repos/Boxer-egg/spk/releases/tags/v0.1.2\")",
+      "Bash(curl -s -H \"Accept: application/vnd.github+json\" \"https://api.github.com/repos/Boxer-egg/spk/actions/runs?branch=main&event=push\")",
+      "Bash(curl -s -H \"Accept: application/vnd.github+json\" \"https://api.github.com/repos/Boxer-egg/spk/actions/runs?branch=main\")",
+      "Bash(curl -s -H \"Accept: application/vnd.github+json\" \"https://api.github.com/repos/Boxer-egg/spk/actions/runs\")",
+      "Bash(curl -s -H \"Accept: application/vnd.github+json\" \"https://api.github.com/repos/Boxer-egg/spk/actions/runs/23906001388/jobs\")",
+      "Bash(curl -s -H \"Accept: application/vnd.github+json\" \"https://api.github.com/repos/Boxer-egg/spk/releases/tags/v0.1.3\")"
+    ]
+  }
+}

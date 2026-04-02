@@ -17,6 +17,7 @@ package:
 	mkdir -p $(RESOURCES)
 	cp $(BUILD_DIR)/$(APP_NAME) $(MACOS)/
 	cp Sources/spk/Resources/Info.plist $(CONTENTS)/
+	cp Sources/spk/Resources/AppIcon.icns $(RESOURCES)/
 
 sign:
 	codesign --force --options runtime --entitlements entitlements.plist --sign - $(APP_BUNDLE)
