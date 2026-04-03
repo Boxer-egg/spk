@@ -63,4 +63,5 @@
 "menu.history.paste" = "粘贴此内容";
 "menu.history.viewOriginal" = "查看原始内容...";
 "menu.history.original.title" = "原始内容";
+"menu.history.original.copy" = "复制";
 "menu.history.original.close" = "关闭";

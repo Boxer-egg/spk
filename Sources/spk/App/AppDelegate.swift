@@ -407,8 +407,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         alert.messageText = NSLocalizedString("menu.history.original.title", comment: "")
         alert.informativeText = entry.originalText
         alert.alertStyle = .informational
+        // 复制按钮先添加，使其成为主按钮（蓝色）
+        alert.addButton(withTitle: NSLocalizedString("menu.history.original.copy", comment: ""))
         alert.addButton(withTitle: NSLocalizedString("menu.history.original.close", comment: ""))
-        alert.runModal()
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.setString(entry.originalText, forType: .string)
+        }
     }
 
     @objc func clearHistory(_ sender: NSMenuItem?) {

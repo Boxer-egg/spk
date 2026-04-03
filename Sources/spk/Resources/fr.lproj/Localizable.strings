@@ -63,4 +63,5 @@
 "menu.history.paste" = "Coller";
 "menu.history.viewOriginal" = "Voir l'original...";
 "menu.history.original.title" = "Texte original";
+"menu.history.original.copy" = "Copier";
 "menu.history.original.close" = "Fermer";

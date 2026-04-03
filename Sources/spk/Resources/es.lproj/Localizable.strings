@@ -63,4 +63,5 @@
 "menu.history.paste" = "Pegar";
 "menu.history.viewOriginal" = "Ver original...";
 "menu.history.original.title" = "Texto original";
+"menu.history.original.copy" = "Copiar";
 "menu.history.original.close" = "Cerrar";

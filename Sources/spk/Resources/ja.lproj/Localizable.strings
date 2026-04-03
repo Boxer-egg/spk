@@ -63,4 +63,5 @@
 "menu.history.paste" = "貼り付け";
 "menu.history.viewOriginal" = "元の内容を表示...";
 "menu.history.original.title" = "元の内容";
+"menu.history.original.copy" = "コピー";
 "menu.history.original.close" = "閉じる";
