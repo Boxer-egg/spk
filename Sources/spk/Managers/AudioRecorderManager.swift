@@ -57,6 +57,17 @@ class AudioRecorderManager {
     }
 
     func urlForAudio(named filename: String) -> URL {
-        return tapeDirectoryURL.appendingPathComponent(filename)
+        let safeName = (filename as NSString).lastPathComponent
+        return tapeDirectoryURL.appendingPathComponent(safeName)
+    }
+
+    func removeOrphanedAudioFiles(referencedFilenames: [String]) {
+        guard let contents = try? FileManager.default.contentsOfDirectory(at: tapeDirectoryURL, includingPropertiesForKeys: nil) else { return }
+        let referencedSet = Set(referencedFilenames)
+        for url in contents where url.pathExtension.lowercased() == "m4a" {
+            if !referencedSet.contains(url.lastPathComponent) {
+                try? FileManager.default.removeItem(at: url)
+            }
+        }
     }
 }

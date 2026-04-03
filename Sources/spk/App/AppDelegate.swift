@@ -47,7 +47,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         speechManager.delegate = self
         
         checkPermissions()
-        
+
+        let referenced = HistoryManager.shared.getEntries().compactMap { $0.audioFilename }
+        AudioRecorderManager.shared.removeOrphanedAudioFiles(referencedFilenames: referenced)
+
         // Initial language
         speechManager.setLanguage(SettingsManager.shared.selectedLanguage)
     }

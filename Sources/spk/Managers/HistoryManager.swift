@@ -74,7 +74,8 @@ class HistoryManager {
             let removed = entries.suffix(entries.count - maxEntries)
             for old in removed {
                 if let filename = old.audioFilename {
-                    let url = tapeDirectoryURL.appendingPathComponent(filename)
+                    let safeName = (filename as NSString).lastPathComponent
+                    let url = tapeDirectoryURL.appendingPathComponent(safeName)
                     try? FileManager.default.removeItem(at: url)
                 }
             }
@@ -91,7 +92,8 @@ class HistoryManager {
     func clearHistory() {
         for entry in entries {
             if let filename = entry.audioFilename {
-                let url = tapeDirectoryURL.appendingPathComponent(filename)
+                let safeName = (filename as NSString).lastPathComponent
+                let url = tapeDirectoryURL.appendingPathComponent(safeName)
                 try? FileManager.default.removeItem(at: url)
             }
         }
