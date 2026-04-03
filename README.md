@@ -14,16 +14,27 @@ macOS 菜单栏语音输入工具 · 按住 Fn 键即可录音
 
 ## 快速开始
 
-**构建**
+### 从源码构建
+
 ```bash
 git clone https://github.com/Boxer-egg/spk.git
 cd spk
-make build
+make all
 ```
 
-**安装**
-直接安装app即可
+构建完成后，当前目录会出现 `Spk.app`，直接拖到「应用程序」文件夹即可。
 
+### 下载预编译版本
+
+前往 [Releases](https://github.com/Boxer-egg/spk/releases) 下载最新版 `Spk.zip`，解压后将 `Spk.app` 拖入「应用程序」文件夹。
+
+> **注意：** 由于本应用使用 Ad-hoc 自签名，从浏览器下载后首次打开会被 macOS Gatekeeper 拦截。你可以选择以下任一方式解决：
+>
+> 1. **右键打开**：在「启动台」或「应用程序」文件夹中，按住 `Control` 键并点击 `Spk` → 选择「打开」→ 点击弹窗中的「仍要打开」。
+> 2. **终端移除隔离属性**（推荐）：
+>    ```bash
+>    sudo xattr -rd com.apple.quarantine /Applications/Spk.app
+>    ```
 
 ## 权限要求
 
