@@ -6,15 +6,15 @@ struct PromptSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("AI Prompt")
+                Text(NSLocalizedString("prompt.title", comment: ""))
                     .font(.title2)
                     .fontWeight(.semibold)
 
                 card {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("System Prompt")
+                        Text(NSLocalizedString("prompt.system", comment: ""))
                             .font(.system(size: 13, weight: .medium))
-                        Text("This prompt guides how the AI refines your speech.")
+                        Text(NSLocalizedString("prompt.subtitle", comment: ""))
                             .font(.caption)
                             .foregroundColor(.secondary)
 
@@ -30,6 +30,15 @@ struct PromptSettingsView: View {
                     }
                     .padding(14)
                 }
+
+                HStack {
+                    Spacer()
+                    Text(NSLocalizedString("common.changesSaved", comment: ""))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                .padding(.top, 8)
 
                 Spacer(minLength: 20)
             }

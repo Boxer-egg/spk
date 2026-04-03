@@ -10,28 +10,28 @@ struct APISettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("API Settings")
+                Text(NSLocalizedString("api.title", comment: ""))
                     .font(.title2)
                     .fontWeight(.semibold)
 
                 card {
                     VStack(spacing: 14) {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("API Base URL")
+                            Text(NSLocalizedString("api.baseURL", comment: ""))
                                 .font(.system(size: 13, weight: .medium))
                             TextField("", text: $settings.apiBaseURL)
                                 .textFieldStyle(.roundedBorder)
                         }
 
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("API Key")
+                            Text(NSLocalizedString("api.key", comment: ""))
                                 .font(.system(size: 13, weight: .medium))
                             SecureField("", text: $settings.apiKey)
                                 .textFieldStyle(.roundedBorder)
                         }
 
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Model")
+                            Text(NSLocalizedString("api.model", comment: ""))
                                 .font(.system(size: 13, weight: .medium))
                             TextField("", text: $settings.model)
                                 .textFieldStyle(.roundedBorder)
@@ -43,7 +43,7 @@ struct APISettingsView: View {
                 // Test Connection
                 HStack(spacing: 12) {
                     Button(action: testConnection) {
-                        Label("Test Connection", systemImage: "bolt.horizontal.fill")
+                        Label(NSLocalizedString("api.test", comment: ""), systemImage: "bolt.horizontal.fill")
                     }
                     .disabled(isTesting || settings.apiKey.isEmpty)
 
@@ -51,13 +51,22 @@ struct APISettingsView: View {
                         ProgressView()
                             .scaleEffect(0.7)
                             .frame(width: 20, height: 20)
-                        Text("Testing...")
+                        Text(NSLocalizedString("api.testing", comment: ""))
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
 
                 statusCard
+
+                HStack {
+                    Spacer()
+                    Text(NSLocalizedString("common.changesSaved", comment: ""))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                .padding(.top, 8)
 
                 Spacer(minLength: 20)
             }
@@ -88,11 +97,15 @@ struct APISettingsView: View {
 
     private func statusConfiguration() -> (borderColor: Color, icon: String, message: String) {
         if testStatus.isEmpty {
-            return (Color.secondary.opacity(0.3), "info.circle", "Click the button above to test connection status")
-        } else if testStatus.contains("Successful") {
-            return (.green, "checkmark.circle.fill", "\(testStatus)（耗时 \(String(format: "%.2f", testDuration))s）")
+            return (Color.secondary.opacity(0.3), "info.circle", NSLocalizedString("api.status.info", comment: ""))
+        } else if testStatus.contains(NSLocalizedString("api.status.success", comment: "")) {
+            let format = NSLocalizedString("api.status.time", comment: "")
+            let timeStr = String(format: "%.2f", testDuration)
+            return (.green, "checkmark.circle.fill", String(format: format, testStatus, timeStr))
         } else {
-            return (.red, "xmark.circle.fill", "\(testStatus)（耗时 \(String(format: "%.2f", testDuration))s）")
+            let format = NSLocalizedString("api.status.time", comment: "")
+            let timeStr = String(format: "%.2f", testDuration)
+            return (.red, "xmark.circle.fill", String(format: format, testStatus, timeStr))
         }
     }
 

@@ -19,7 +19,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     
     var settingsWindow: NSWindow?
     var historyMenuItem: NSMenuItem?
-    
+    var statsTodayItem: NSMenuItem?
+    var statsWordsItem: NSMenuItem?
+
+    private var statisticsTodayKey: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return "statsCount_" + formatter.string(from: Date())
+    }
+
+    private var statisticsTotalWords: Int {
+        get { UserDefaults.standard.integer(forKey: "statsTotalWords") }
+        set { UserDefaults.standard.set(newValue, forKey: "statsTotalWords") }
+    }
+
+    private var statisticsTodayCount: Int {
+        get { UserDefaults.standard.integer(forKey: statisticsTodayKey) }
+        set { UserDefaults.standard.set(newValue, forKey: statisticsTodayKey) }
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory) // Force LSUIElement behavior
         setupMenuBar()
@@ -66,9 +84,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         if let button = statusItem?.button {
             button.image = NSImage(systemSymbolName: "mic.fill", accessibilityDescription: "Spk")
         }
-        
+
         let menu = NSMenu()
-        
+
         // Languages
         let langMenu = NSMenu()
         for lang in Language.allCases {
@@ -77,27 +95,40 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             item.state = (lang == SettingsManager.shared.selectedLanguage) ? .on : .off
             langMenu.addItem(item)
         }
-        let langMenuItem = NSMenuItem(title: "Language", action: nil, keyEquivalent: "")
+        let langMenuItem = NSMenuItem(title: NSLocalizedString("menu.language", comment: ""), action: nil, keyEquivalent: "")
         langMenuItem.submenu = langMenu
         menu.addItem(langMenuItem)
 
         // History
         let historyMenu = NSMenu()
-        let historyMenuItem = NSMenuItem(title: "History", action: nil, keyEquivalent: "")
+        let historyMenuItem = NSMenuItem(title: NSLocalizedString("menu.history", comment: ""), action: nil, keyEquivalent: "")
         historyMenuItem.submenu = historyMenu
         menu.addItem(historyMenuItem)
         self.historyMenuItem = historyMenuItem
 
         menu.addItem(NSMenuItem.separator())
-        
+
         // LLM Toggle
-        let llmToggle = NSMenuItem(title: "LLM Correction", action: #selector(toggleLLM), keyEquivalent: "l")
+        let llmToggle = NSMenuItem(title: NSLocalizedString("menu.llm", comment: ""), action: #selector(toggleLLM), keyEquivalent: "l")
         llmToggle.state = SettingsManager.shared.isLLMEnabled ? .on : .off
         menu.addItem(llmToggle)
-        
+
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "Settings...", action: #selector(openSettings), keyEquivalent: ","))
-        menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.settings", comment: ""), action: #selector(openSettings), keyEquivalent: ","))
+
+        // Statistics
+        let todayItem = NSMenuItem(title: String(format: NSLocalizedString("menu.statistics.today", comment: ""), statisticsTodayCount), action: nil, keyEquivalent: "")
+        todayItem.isEnabled = false
+        menu.addItem(todayItem)
+        self.statsTodayItem = todayItem
+
+        let wordsItem = NSMenuItem(title: String(format: NSLocalizedString("menu.statistics.words", comment: ""), statisticsTotalWords), action: nil, keyEquivalent: "")
+        wordsItem.isEnabled = false
+        menu.addItem(wordsItem)
+        self.statsWordsItem = wordsItem
+
+        menu.addItem(NSMenuItem.separator())
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.quit", comment: ""), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         menu.delegate = self
         statusItem?.menu = menu
     }
@@ -118,13 +149,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     private func updateMenuStates() {
         if let menu = statusItem?.menu {
             // Update Language checkmarks
-            if let langMenu = menu.item(withTitle: "Language")?.submenu {
+            if let langMenuItem = menu.items.first(where: { $0.title == NSLocalizedString("menu.language", comment: "") }),
+               let langMenu = langMenuItem.submenu {
                 for item in langMenu.items {
                     item.state = (item.representedObject as? Language == SettingsManager.shared.selectedLanguage) ? .on : .off
                 }
             }
             // Update LLM Toggle checkmark
-            if let llmItem = menu.item(withTitle: "LLM Correction") {
+            if let llmItem = menu.items.first(where: { $0.title == NSLocalizedString("menu.llm", comment: "") }) {
                 llmItem.state = SettingsManager.shared.isLLMEnabled ? .on : .off
             }
         }
@@ -138,7 +170,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             settingsWindow?.title = "Spk Settings"
             settingsWindow?.styleMask = [.titled, .closable, .miniaturizable]
             settingsWindow?.level = .floating
-            settingsWindow?.minSize = NSSize(width: 640, height: 420)
+            settingsWindow?.minSize = NSSize(width: 640, height: 840)
         }
         settingsWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
@@ -194,10 +226,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     }
     
     func speechManager(_ manager: SpeechManager, didFinishWithText text: String) {
+        let wordCount = text.count
+        statisticsTodayCount += 1
+        statisticsTotalWords += wordCount
+
         if SettingsManager.shared.isLLMEnabled {
             HUDViewModel.shared.state = .refining
             HUDViewModel.shared.text = text // Show original text while refining
-            
+
             LLMManager.shared.refineText(text) { result in
                 DispatchQueue.main.async {
                     switch result {
@@ -212,7 +248,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                         ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
                         HistoryManager.shared.addEntry(originalText: text, refinedText: nil)
                     }
-                    
+
                     // Delay hiding to let user see the final result
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         HUDViewModel.shared.isVisible = false
@@ -245,6 +281,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     // MARK: - NSMenuDelegate
     func menuWillOpen(_ menu: NSMenu) {
         updateHistoryMenu()
+        statsTodayItem?.title = String(format: NSLocalizedString("menu.statistics.today", comment: ""), statisticsTodayCount)
+        statsWordsItem?.title = String(format: NSLocalizedString("menu.statistics.words", comment: ""), statisticsTotalWords)
     }
 
     private func updateHistoryMenu() {
@@ -253,7 +291,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
 
         let entries = HistoryManager.shared.getEntries()
         if entries.isEmpty {
-            let item = NSMenuItem(title: "No history", action: nil, keyEquivalent: "")
+            let item = NSMenuItem(title: NSLocalizedString("menu.history.empty", comment: ""), action: nil, keyEquivalent: "")
             item.isEnabled = false
             historyMenu.addItem(item)
         } else {
@@ -282,31 +320,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             }
             if entries.count > 10 {
                 historyMenu.addItem(NSMenuItem.separator())
-                let moreItem = NSMenuItem(title: "\(entries.count - 10) more entries", action: nil, keyEquivalent: "")
+                let moreItem = NSMenuItem(title: String(format: NSLocalizedString("menu.history.more", comment: ""), entries.count - 10), action: nil, keyEquivalent: "")
                 moreItem.isEnabled = false
                 historyMenu.addItem(moreItem)
             }
             historyMenu.addItem(NSMenuItem.separator())
-            let clearItem = NSMenuItem(title: "Clear History...", action: #selector(clearHistory(_:)), keyEquivalent: "")
+            let clearItem = NSMenuItem(title: NSLocalizedString("menu.history.clear", comment: ""), action: #selector(clearHistory(_:)), keyEquivalent: "")
             historyMenu.addItem(clearItem)
         }
     }
 
     @objc func selectHistoryItem(_ sender: NSMenuItem) {
         guard let entry = sender.representedObject as? HistoryEntry else { return }
-        // 将文本复制到剪贴板或粘贴？
-        // 暂时仅复制到剪贴板
         let text = entry.refinedText ?? entry.originalText
         ClipboardManager.shared.pasteText(text, keepInClipboard: true)
     }
 
     @objc func clearHistory(_ sender: NSMenuItem?) {
         let alert = NSAlert()
-        alert.messageText = "Clear History?"
-        alert.informativeText = "确定要清除所有历史记录吗？此操作无法撤销。"
+        alert.messageText = NSLocalizedString("menu.history.clear.title", comment: "")
+        alert.informativeText = NSLocalizedString("menu.history.clear.message", comment: "")
         alert.alertStyle = .warning
-        alert.addButton(withTitle: "Clear")
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: NSLocalizedString("menu.history.clear.confirm", comment: ""))
+        alert.addButton(withTitle: NSLocalizedString("menu.history.clear.cancel", comment: ""))
         let response = alert.runModal()
         if response == .alertFirstButtonReturn {
             HistoryManager.shared.clearHistory()

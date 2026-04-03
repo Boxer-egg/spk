@@ -6,35 +6,44 @@ struct GeneralSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("General")
+                Text(NSLocalizedString("general.title", comment: ""))
                     .font(.title2)
                     .fontWeight(.semibold)
 
                 card {
                     VStack(spacing: 0) {
                         toggleRow(
-                            title: "Enable LLM Correction",
-                            subtitle: "Refine speech with AI before pasting",
+                            title: NSLocalizedString("general.llm.title", comment: ""),
+                            subtitle: NSLocalizedString("general.llm.subtitle", comment: ""),
                             isOn: $settings.isLLMEnabled
                         )
 
                         Divider().padding(.leading, 12)
 
                         toggleRow(
-                            title: "Copy to Clipboard",
-                            subtitle: "Save final output automatically",
+                            title: NSLocalizedString("general.clipboard.title", comment: ""),
+                            subtitle: NSLocalizedString("general.clipboard.subtitle", comment: ""),
                             isOn: $settings.isCopyToClipboardEnabled
                         )
 
                         Divider().padding(.leading, 12)
 
                         toggleRow(
-                            title: "Record History",
-                            subtitle: "Save transcriptions (max 20 entries)",
+                            title: NSLocalizedString("general.history.title", comment: ""),
+                            subtitle: NSLocalizedString("general.history.subtitle", comment: ""),
                             isOn: $settings.isHistoryEnabled
                         )
                     }
                 }
+
+                HStack {
+                    Spacer()
+                    Text(NSLocalizedString("common.changesSaved", comment: ""))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                .padding(.top, 8)
 
                 Spacer(minLength: 20)
             }

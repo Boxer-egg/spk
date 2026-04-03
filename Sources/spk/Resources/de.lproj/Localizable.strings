@@ -1,0 +1,61 @@
+/* SettingsView */
+"settings.title" = "Einstellungen";
+"settings.tab.general" = "Allgemein";
+"settings.tab.api" = "API";
+"settings.tab.prompt" = "Prompt";
+"settings.tab.shortcuts" = "Tastenkürzel";
+
+/* GeneralSettingsView */
+"general.title" = "Allgemein";
+"general.llm.title" = "LLM-Korrektur aktivieren";
+"general.llm.subtitle" = "Sprache vor dem Einfügen mit KI optimieren";
+"general.clipboard.title" = "In Zwischenablage kopieren";
+"general.clipboard.subtitle" = "Endergebnis automatisch speichern";
+"general.history.title" = "Verlauf aufzeichnen";
+"general.history.subtitle" = "Transkriptionen speichern (max. 20 Einträge)";
+
+/* APISettingsView */
+"api.title" = "API-Einstellungen";
+"api.baseURL" = "API-Basis-URL";
+"api.key" = "API-Schlüssel";
+"api.model" = "Modell";
+"api.test" = "Verbindung testen";
+"api.testing" = "Teste...";
+"api.status.info" = "Klicke auf die Schaltfläche oben, um den Verbindungsstatus zu testen";
+"api.status.success" = "Erfolgreich";
+"api.status.error" = "Fehler: %@";
+"api.status.time" = "%@ (%@s)";
+
+/* PromptSettingsView */
+"prompt.title" = "KI-Prompt";
+"prompt.system" = "System-Prompt";
+"prompt.subtitle" = "Dieser Prompt steuert, wie die KI deine Sprache optimiert.";
+
+/* ShortcutSettingsView */
+"shortcuts.title" = "Tastenkürzel";
+"shortcuts.holdToSpeak" = "Halten zum Sprechen";
+"shortcuts.hold.subtitle" = "Zum Aufnehmen gedrückt halten";
+"shortcuts.toggle.subtitle" = "Umschalten: Klicken zum Starten/Stoppen";
+"shortcuts.triggerKey" = "Auslösetaste";
+"shortcuts.hints" = "Nutzungshinweise";
+"shortcuts.hint.hold" = "Halte die ausgewählte Taste gedrückt, um aufzunehmen.\nLoslassen zum Beenden.";
+"shortcuts.hint.toggle" = "Klicke einmal, um zu starten.\nKlicke erneut, um zu stoppen.";
+
+/* Common */
+"common.changesSaved" = "Änderungen werden automatisch gespeichert";
+
+/* AppDelegate Menu */
+"menu.language" = "Sprache";
+"menu.history" = "Verlauf";
+"menu.history.empty" = "Kein Verlauf";
+"menu.history.more" = "%d weitere Einträge";
+"menu.history.clear" = "Verlauf löschen...";
+"menu.history.clear.title" = "Verlauf löschen?";
+"menu.history.clear.message" = "Möchtest du wirklich den gesamten Verlauf löschen? Diese Aktion kann nicht rückgängig gemacht werden.";
+"menu.history.clear.confirm" = "Löschen";
+"menu.history.clear.cancel" = "Abbrechen";
+"menu.llm" = "LLM-Korrektur";
+"menu.settings" = "Einstellungen...";
+"menu.quit" = "Beenden";
+"menu.statistics.today" = "Heute: %d";
+"menu.statistics.words" = "Wörter gesamt: %d";

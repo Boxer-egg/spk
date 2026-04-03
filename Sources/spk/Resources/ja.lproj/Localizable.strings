@@ -1,0 +1,61 @@
+/* SettingsView */
+"settings.title" = "設定";
+"settings.tab.general" = "一般";
+"settings.tab.api" = "API";
+"settings.tab.prompt" = "プロンプト";
+"settings.tab.shortcuts" = "ショートカット";
+
+/* GeneralSettingsView */
+"general.title" = "一般";
+"general.llm.title" = "LLM 修正を有効化";
+"general.llm.subtitle" = "貼り付ける前に AI で音声を最適化";
+"general.clipboard.title" = "クリップボードにコピー";
+"general.clipboard.subtitle" = "最終出力を自動保存";
+"general.history.title" = "履歴を記録";
+"general.history.subtitle" = "文字起こしを保存（最大 20 件）";
+
+/* APISettingsView */
+"api.title" = "API 設定";
+"api.baseURL" = "API ベース URL";
+"api.key" = "API キー";
+"api.model" = "モデル";
+"api.test" = "接続をテスト";
+"api.testing" = "テスト中...";
+"api.status.info" = "上のボタンをクリックして接続状況をテストしてください";
+"api.status.success" = "成功";
+"api.status.error" = "エラー：%@";
+"api.status.time" = "%@（%@ 秒）";
+
+/* PromptSettingsView */
+"prompt.title" = "AI プロンプト";
+"prompt.system" = "システムプロンプト";
+"prompt.subtitle" = "このプロンプトは、AI が音声をどのように最適化するかを指導します。";
+
+/* ShortcutSettingsView */
+"shortcuts.title" = "ショートカット";
+"shortcuts.holdToSpeak" = "押し続けて話す";
+"shortcuts.hold.subtitle" = "押し続けると録音を開始";
+"shortcuts.toggle.subtitle" = "切り替えモード：クリックで開始/停止";
+"shortcuts.triggerKey" = "トリガーキー";
+"shortcuts.hints" = "使用ヒント";
+"shortcuts.hint.hold" = "選択したキーを押し続けて録音を開始します。\n離すと終了します。";
+"shortcuts.hint.toggle" = "キーを1回クリックで開始します。\nもう1回クリックで停止します。";
+
+/* Common */
+"common.changesSaved" = "変更は自動的に保存されます";
+
+/* AppDelegate Menu */
+"menu.language" = "言語";
+"menu.history" = "履歴";
+"menu.history.empty" = "履歴なし";
+"menu.history.more" = "さらに %d 件";
+"menu.history.clear" = "履歴をクリア...";
+"menu.history.clear.title" = "履歴をクリアしますか？";
+"menu.history.clear.message" = "すべての履歴をクリアしてもよろしいですか？この操作は元に戻せません。";
+"menu.history.clear.confirm" = "クリア";
+"menu.history.clear.cancel" = "キャンセル";
+"menu.llm" = "LLM 修正";
+"menu.settings" = "設定...";
+"menu.quit" = "終了";
+"menu.statistics.today" = "今日：%d";
+"menu.statistics.words" = "総文字数：%d";

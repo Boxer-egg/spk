@@ -5,10 +5,10 @@ enum SettingsTab: String, CaseIterable {
 
     var title: String {
         switch self {
-        case .general: return "General"
-        case .api: return "API"
-        case .prompt: return "Prompt"
-        case .shortcuts: return "Shortcuts"
+        case .general: return NSLocalizedString("settings.tab.general", comment: "")
+        case .api: return NSLocalizedString("settings.tab.api", comment: "")
+        case .prompt: return NSLocalizedString("settings.tab.prompt", comment: "")
+        case .shortcuts: return NSLocalizedString("settings.tab.shortcuts", comment: "")
         }
     }
 
@@ -29,10 +29,10 @@ struct SettingsView: View {
         HStack(spacing: 0) {
             // Sidebar
             VStack(alignment: .leading, spacing: 4) {
-                Text("SPK")
+                Text("Spk")
                     .font(.system(size: 13, weight: .bold))
                     .foregroundColor(.primary)
-                Text("Settings")
+                Text(NSLocalizedString("settings.title", comment: ""))
                     .font(.system(size: 11))
                     .foregroundColor(.secondary)
                     .padding(.bottom, 12)
@@ -62,7 +62,9 @@ struct SettingsView: View {
 
                 Spacer()
             }
-            .padding(12)
+            .padding(.horizontal, 12)
+            .padding(.top, 28)
+            .padding(.bottom, 12)
             .frame(width: 160)
             .background(Color(nsColor: .windowBackgroundColor))
 
@@ -84,6 +86,6 @@ struct SettingsView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(nsColor: .windowBackgroundColor))
         }
-        .frame(width: 640, height: 420)
+        .frame(width: 640, height: 840)
     }
 }

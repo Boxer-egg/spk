@@ -8,7 +8,7 @@ struct ShortcutSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Shortcuts")
+                Text(NSLocalizedString("shortcuts.title", comment: ""))
                     .font(.title2)
                     .fontWeight(.semibold)
 
@@ -16,9 +16,9 @@ struct ShortcutSettingsView: View {
                     VStack(spacing: 0) {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("Hold to Speak")
+                                Text(NSLocalizedString("shortcuts.holdToSpeak", comment: ""))
                                     .font(.system(size: 13, weight: .medium))
-                                Text(settings.isHoldToSpeak ? "Press and hold to record" : "Toggle mode: click to start/stop")
+                                Text(settings.isHoldToSpeak ? NSLocalizedString("shortcuts.hold.subtitle", comment: "") : NSLocalizedString("shortcuts.toggle.subtitle", comment: ""))
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -33,7 +33,7 @@ struct ShortcutSettingsView: View {
                         Divider().padding(.leading, 12)
 
                         HStack {
-                            Text("Trigger Key")
+                            Text(NSLocalizedString("shortcuts.triggerKey", comment: ""))
                                 .font(.system(size: 13, weight: .medium))
                             Spacer()
                             Picker("", selection: $settings.triggerKey) {
@@ -51,17 +51,26 @@ struct ShortcutSettingsView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Usage Hints")
+                    Text(NSLocalizedString("shortcuts.hints", comment: ""))
                         .font(.headline)
                     if settings.isHoldToSpeak {
-                        Text("Press and hold the selected key to record.\nRelease to finish.")
+                        Text(NSLocalizedString("shortcuts.hint.hold", comment: ""))
                     } else {
-                        Text("Click the key once to start.\nClick it again to stop.")
+                        Text(NSLocalizedString("shortcuts.hint.toggle", comment: ""))
                     }
                 }
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .padding(.horizontal, 4)
+
+                HStack {
+                    Spacer()
+                    Text(NSLocalizedString("common.changesSaved", comment: ""))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                .padding(.top, 8)
 
                 Spacer(minLength: 20)
             }

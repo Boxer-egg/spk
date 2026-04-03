@@ -1,0 +1,61 @@
+/* SettingsView */
+"settings.title" = "Settings";
+"settings.tab.general" = "General";
+"settings.tab.api" = "API";
+"settings.tab.prompt" = "Prompt";
+"settings.tab.shortcuts" = "Shortcuts";
+
+/* GeneralSettingsView */
+"general.title" = "General";
+"general.llm.title" = "Enable LLM Correction";
+"general.llm.subtitle" = "Refine speech with AI before pasting";
+"general.clipboard.title" = "Copy to Clipboard";
+"general.clipboard.subtitle" = "Save final output automatically";
+"general.history.title" = "Record History";
+"general.history.subtitle" = "Save transcriptions (max 20 entries)";
+
+/* APISettingsView */
+"api.title" = "API Settings";
+"api.baseURL" = "API Base URL";
+"api.key" = "API Key";
+"api.model" = "Model";
+"api.test" = "Test Connection";
+"api.testing" = "Testing...";
+"api.status.info" = "Click the button above to test connection status";
+"api.status.success" = "Successful";
+"api.status.error" = "Error: %@";
+"api.status.time" = "%@ (took %@s)";
+
+/* PromptSettingsView */
+"prompt.title" = "AI Prompt";
+"prompt.system" = "System Prompt";
+"prompt.subtitle" = "This prompt guides how the AI refines your speech.";
+
+/* ShortcutSettingsView */
+"shortcuts.title" = "Shortcuts";
+"shortcuts.holdToSpeak" = "Hold to Speak";
+"shortcuts.hold.subtitle" = "Press and hold to record";
+"shortcuts.toggle.subtitle" = "Toggle mode: click to start/stop";
+"shortcuts.triggerKey" = "Trigger Key";
+"shortcuts.hints" = "Usage Hints";
+"shortcuts.hint.hold" = "Press and hold the selected key to record.\nRelease to finish.";
+"shortcuts.hint.toggle" = "Click the key once to start.\nClick it again to stop.";
+
+/* Common */
+"common.changesSaved" = "Changes are saved automatically";
+
+/* AppDelegate Menu */
+"menu.language" = "Language";
+"menu.history" = "History";
+"menu.history.empty" = "No history";
+"menu.history.more" = "%d more entries";
+"menu.history.clear" = "Clear History...";
+"menu.history.clear.title" = "Clear History?";
+"menu.history.clear.message" = "Are you sure you want to clear all history? This action cannot be undone.";
+"menu.history.clear.confirm" = "Clear";
+"menu.history.clear.cancel" = "Cancel";
+"menu.llm" = "LLM Correction";
+"menu.settings" = "Settings...";
+"menu.quit" = "Quit";
+"menu.statistics.today" = "Today: %d";
+"menu.statistics.words" = "Total Words: %d";

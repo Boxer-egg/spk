@@ -1,0 +1,61 @@
+/* SettingsView */
+"settings.title" = "Configuración";
+"settings.tab.general" = "General";
+"settings.tab.api" = "API";
+"settings.tab.prompt" = "Indicación";
+"settings.tab.shortcuts" = "Atajos";
+
+/* GeneralSettingsView */
+"general.title" = "General";
+"general.llm.title" = "Activar corrección con LLM";
+"general.llm.subtitle" = "Refina el habla con IA antes de pegar";
+"general.clipboard.title" = "Copiar al portapapeles";
+"general.clipboard.subtitle" = "Guardar el resultado automáticamente";
+"general.history.title" = "Guardar historial";
+"general.history.subtitle" = "Guardar transcripciones (máx. 20)";
+
+/* APISettingsView */
+"api.title" = "Configuración de API";
+"api.baseURL" = "URL base de la API";
+"api.key" = "Clave de API";
+"api.model" = "Modelo";
+"api.test" = "Probar conexión";
+"api.testing" = "Probando...";
+"api.status.info" = "Haz clic en el botón de arriba para probar la conexión";
+"api.status.success" = "Exitoso";
+"api.status.error" = "Error: %@";
+"api.status.time" = "%@ (tomó %@s)";
+
+/* PromptSettingsView */
+"prompt.title" = "Indicación de IA";
+"prompt.system" = "Indicación del sistema";
+"prompt.subtitle" = "Esta indicación guía cómo la IA refina tu habla.";
+
+/* ShortcutSettingsView */
+"shortcuts.title" = "Atajos";
+"shortcuts.holdToSpeak" = "Mantener para hablar";
+"shortcuts.hold.subtitle" = "Mantén presionado para grabar";
+"shortcuts.toggle.subtitle" = "Modo alternar: haz clic para iniciar/detener";
+"shortcuts.triggerKey" = "Tecla de activación";
+"shortcuts.hints" = "Consejos de uso";
+"shortcuts.hint.hold" = "Mantén presionada la tecla seleccionada para grabar.\nSuelta para finalizar.";
+"shortcuts.hint.toggle" = "Haz clic una vez para iniciar.\nHaz clic de nuevo para detener.";
+
+/* Common */
+"common.changesSaved" = "Los cambios se guardan automáticamente";
+
+/* AppDelegate Menu */
+"menu.language" = "Idioma";
+"menu.history" = "Historial";
+"menu.history.empty" = "Sin historial";
+"menu.history.more" = "%d entradas más";
+"menu.history.clear" = "Borrar historial...";
+"menu.history.clear.title" = "¿Borrar historial?";
+"menu.history.clear.message" = "¿Estás seguro de que quieres borrar todo el historial? Esta acción no se puede deshacer.";
+"menu.history.clear.confirm" = "Borrar";
+"menu.history.clear.cancel" = "Cancelar";
+"menu.llm" = "Corrección con LLM";
+"menu.settings" = "Configuración...";
+"menu.quit" = "Salir";
+"menu.statistics.today" = "Hoy: %d";
+"menu.statistics.words" = "Palabras totales: %d";

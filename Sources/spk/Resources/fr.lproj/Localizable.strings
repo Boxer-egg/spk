@@ -1,0 +1,61 @@
+/* SettingsView */
+"settings.title" = "Réglages";
+"settings.tab.general" = "Général";
+"settings.tab.api" = "API";
+"settings.tab.prompt" = "Invite";
+"settings.tab.shortcuts" = "Raccourcis";
+
+/* GeneralSettingsView */
+"general.title" = "Général";
+"general.llm.title" = "Activer la correction LLM";
+"general.llm.subtitle" = "Affiner la parole avec l'IA avant de coller";
+"general.clipboard.title" = "Copier dans le presse-papiers";
+"general.clipboard.subtitle" = "Enregistrer le résultat final automatiquement";
+"general.history.title" = "Enregistrer l'historique";
+"general.history.subtitle" = "Sauvegarder les transcriptions (max 20)";
+
+/* APISettingsView */
+"api.title" = "Paramètres de l'API";
+"api.baseURL" = "URL de base de l'API";
+"api.key" = "Clé API";
+"api.model" = "Modèle";
+"api.test" = "Tester la connexion";
+"api.testing" = "Test en cours...";
+"api.status.info" = "Cliquez sur le bouton ci-dessus pour tester l'état de la connexion";
+"api.status.success" = "Réussi";
+"api.status.error" = "Erreur : %@";
+"api.status.time" = "%@ (%@s)";
+
+/* PromptSettingsView */
+"prompt.title" = "Invite IA";
+"prompt.system" = "Invite système";
+"prompt.subtitle" = "Cette invite guide l'IA dans l'affinage de votre parole.";
+
+/* ShortcutSettingsView */
+"shortcuts.title" = "Raccourcis";
+"shortcuts.holdToSpeak" = "Maintenir pour parler";
+"shortcuts.hold.subtitle" = "Maintenir enfoncé pour enregistrer";
+"shortcuts.toggle.subtitle" = "Mode bascule : cliquer pour démarrer/arrêter";
+"shortcuts.triggerKey" = "Touche déclencheur";
+"shortcuts.hints" = "Conseils d'utilisation";
+"shortcuts.hint.hold" = "Maintenez la touche sélectionnée enfoncée pour enregistrer.\nRelâchez pour terminer.";
+"shortcuts.hint.toggle" = "Cliquez une fois pour démarrer.\nCliquez à nouveau pour arrêter.";
+
+/* Common */
+"common.changesSaved" = "Les modifications sont enregistrées automatiquement";
+
+/* AppDelegate Menu */
+"menu.language" = "Langue";
+"menu.history" = "Historique";
+"menu.history.empty" = "Aucun historique";
+"menu.history.more" = "%d entrées supplémentaires";
+"menu.history.clear" = "Effacer l'historique...";
+"menu.history.clear.title" = "Effacer l'historique ?";
+"menu.history.clear.message" = "Voulez-vous vraiment effacer tout l'historique ? Cette action est irréversible.";
+"menu.history.clear.confirm" = "Effacer";
+"menu.history.clear.cancel" = "Annuler";
+"menu.llm" = "Correction LLM";
+"menu.settings" = "Réglages...";
+"menu.quit" = "Quitter";
+"menu.statistics.today" = "Aujourd'hui : %d";
+"menu.statistics.words" = "Mots totaux : %d";

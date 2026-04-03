@@ -1,0 +1,61 @@
+/* SettingsView */
+"settings.title" = "设置";
+"settings.tab.general" = "通用";
+"settings.tab.api" = "API";
+"settings.tab.prompt" = "提示词";
+"settings.tab.shortcuts" = "快捷键";
+
+/* GeneralSettingsView */
+"general.title" = "通用";
+"general.llm.title" = "启用 LLM 纠错";
+"general.llm.subtitle" = "在粘贴前使用 AI 优化语音内容";
+"general.clipboard.title" = "复制到剪贴板";
+"general.clipboard.subtitle" = "自动保存最终结果";
+"general.history.title" = "记录历史";
+"general.history.subtitle" = "保存转录记录（最多 20 条）";
+
+/* APISettingsView */
+"api.title" = "API 设置";
+"api.baseURL" = "API 基础地址";
+"api.key" = "API 密钥";
+"api.model" = "模型";
+"api.test" = "测试连接";
+"api.testing" = "测试中...";
+"api.status.info" = "点击上方按钮测试连接状态";
+"api.status.success" = "连接成功";
+"api.status.error" = "错误：%@";
+"api.status.time" = "%@（耗时 %@ 秒）";
+
+/* PromptSettingsView */
+"prompt.title" = "AI 提示词";
+"prompt.system" = "系统提示词";
+"prompt.subtitle" = "该提示词将指导 AI 如何优化你的语音内容。";
+
+/* ShortcutSettingsView */
+"shortcuts.title" = "快捷键";
+"shortcuts.holdToSpeak" = "按住说话";
+"shortcuts.hold.subtitle" = "按住不放开始录音";
+"shortcuts.toggle.subtitle" = "切换模式：单击开始/停止";
+"shortcuts.triggerKey" = "触发键";
+"shortcuts.hints" = "使用提示";
+"shortcuts.hint.hold" = "按住所选按键开始录音。\n松开结束。";
+"shortcuts.hint.toggle" = "单击按键开始录音。\n再次单击结束。";
+
+/* Common */
+"common.changesSaved" = "更改会自动保存";
+
+/* AppDelegate Menu */
+"menu.language" = "语言";
+"menu.history" = "历史记录";
+"menu.history.empty" = "无历史记录";
+"menu.history.more" = "还有 %d 条记录";
+"menu.history.clear" = "清除历史记录...";
+"menu.history.clear.title" = "清除历史记录？";
+"menu.history.clear.message" = "确定要清除所有历史记录吗？此操作无法撤销。";
+"menu.history.clear.confirm" = "清除";
+"menu.history.clear.cancel" = "取消";
+"menu.llm" = "LLM 纠错";
+"menu.settings" = "设置...";
+"menu.quit" = "退出";
+"menu.statistics.today" = "今日：%d";
+"menu.statistics.words" = "总字数：%d";
