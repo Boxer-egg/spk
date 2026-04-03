@@ -78,6 +78,13 @@ class SettingsManager: ObservableObject {
         }
     }
 
+    @Published var isHistoryAudioEnabled: Bool {
+        didSet {
+            config["isHistoryAudioEnabled"] = isHistoryAudioEnabled
+            saveConfig()
+        }
+    }
+
     @Published var selectedInputDeviceUID: String {
         didSet {
             config["selectedInputDeviceUID"] = selectedInputDeviceUID.isEmpty ? nil : selectedInputDeviceUID
@@ -111,6 +118,7 @@ class SettingsManager: ObservableObject {
             "triggerKey",
             "isCopyToClipboardEnabled",
             "isHistoryEnabled",
+            "isHistoryAudioEnabled",
             "selectedInputDeviceUID"
         ]
         var migrated = false
@@ -129,6 +137,7 @@ class SettingsManager: ObservableObject {
         self.isLLMEnabled = (config["isLLMEnabled"] as? Bool) ?? false
         self.isCopyToClipboardEnabled = (config["isCopyToClipboardEnabled"] as? Bool) ?? false
         self.isHistoryEnabled = (config["isHistoryEnabled"] as? Bool) ?? true
+        self.isHistoryAudioEnabled = (config["isHistoryAudioEnabled"] as? Bool) ?? false
         self.selectedLanguage = Language(rawValue: config["selectedLanguage"] as? String ?? "zh-CN") ?? .zhCN
         self.apiBaseURL = config["apiBaseURL"] as? String ?? "https://api.openai.com/v1"
         self.apiKey = config["apiKey"] as? String ?? ""
@@ -142,6 +151,7 @@ class SettingsManager: ObservableObject {
         config["isLLMEnabled"] = isLLMEnabled
         config["isCopyToClipboardEnabled"] = isCopyToClipboardEnabled
         config["isHistoryEnabled"] = isHistoryEnabled
+        config["isHistoryAudioEnabled"] = isHistoryAudioEnabled
         config["selectedLanguage"] = selectedLanguage.rawValue
         config["apiBaseURL"] = apiBaseURL
         config["apiKey"] = apiKey
