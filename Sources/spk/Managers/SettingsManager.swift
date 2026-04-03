@@ -78,6 +78,13 @@ class SettingsManager: ObservableObject {
         }
     }
 
+    @Published var selectedInputDeviceUID: String {
+        didSet {
+            config["selectedInputDeviceUID"] = selectedInputDeviceUID.isEmpty ? nil : selectedInputDeviceUID
+            saveConfig()
+        }
+    }
+
     private init() {
         // 配置文件路径：~/.config/spk/
         let homeURL = FileManager.default.homeDirectoryForCurrentUser
@@ -103,7 +110,8 @@ class SettingsManager: ObservableObject {
             "isHoldToSpeak",
             "triggerKey",
             "isCopyToClipboardEnabled",
-            "isHistoryEnabled"
+            "isHistoryEnabled",
+            "selectedInputDeviceUID"
         ]
         var migrated = false
         for key in keysToMigrate {
@@ -128,6 +136,7 @@ class SettingsManager: ObservableObject {
         self.systemPrompt = Self.loadSystemPrompt(config: config, systemPromptURL: systemPromptURL)
         self.isHoldToSpeak = config["isHoldToSpeak"] as? Bool ?? false
         self.triggerKey = config["triggerKey"] as? String ?? "Fn"
+        self.selectedInputDeviceUID = config["selectedInputDeviceUID"] as? String ?? ""
 
         // 确保配置字典包含当前值（用于首次运行）
         config["isLLMEnabled"] = isLLMEnabled
@@ -140,6 +149,7 @@ class SettingsManager: ObservableObject {
         // systemPrompt 不再存储在主配置中
         config["isHoldToSpeak"] = isHoldToSpeak
         config["triggerKey"] = triggerKey
+        config["selectedInputDeviceUID"] = selectedInputDeviceUID
 
         // 如果主配置中还有旧的 systemPrompt，将其移除并迁移到单独文件
         if config["systemPrompt"] != nil {

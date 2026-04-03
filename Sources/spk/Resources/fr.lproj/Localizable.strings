@@ -13,6 +13,8 @@
 "general.clipboard.subtitle" = "Enregistrer le résultat final automatiquement";
 "general.history.title" = "Enregistrer l'historique";
 "general.history.subtitle" = "Sauvegarder les transcriptions (max 20)";
+"general.inputDevice.title" = "Périphérique d'entrée";
+"general.inputDevice.systemDefault" = "Par défaut du système";
 
 /* APISettingsView */
 "api.title" = "Paramètres de l'API";

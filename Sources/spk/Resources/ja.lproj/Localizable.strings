@@ -13,6 +13,8 @@
 "general.clipboard.subtitle" = "最終出力を自動保存";
 "general.history.title" = "履歴を記録";
 "general.history.subtitle" = "文字起こしを保存（最大 20 件）";
+"general.inputDevice.title" = "入力デバイス";
+"general.inputDevice.systemDefault" = "システムデフォルト";
 
 /* APISettingsView */
 "api.title" = "API 設定";

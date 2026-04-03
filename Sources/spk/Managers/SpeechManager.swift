@@ -15,7 +15,7 @@ class SpeechManager: NSObject, SFSpeechRecognizerDelegate {
     private var speechRecognizer: SFSpeechRecognizer?
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
-    private let audioEngine = AVAudioEngine()
+    private var audioEngine = AVAudioEngine()
     
     private var currentLanguage: Language = .zhCN {
         didSet {
@@ -40,27 +40,45 @@ class SpeechManager: NSObject, SFSpeechRecognizerDelegate {
             recognitionTask?.cancel()
             recognitionTask = nil
         }
-        
-        // No AVAudioSession on macOS like iOS, but we need to check permissions
-        
+
+        // Bind to selected input device
+        audioEngine.stop()
+        audioEngine.inputNode.removeTap(onBus: 0)
+        AudioDeviceManager.shared.bindEngine(audioEngine, toDeviceUID: SettingsManager.shared.selectedInputDeviceUID)
+
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         guard let recognitionRequest = recognitionRequest else {
             fatalError("Unable to create a SFSpeechAudioBufferRecognitionRequest object")
         }
-        
+
         recognitionRequest.shouldReportPartialResults = true
-        
+
         let inputNode = audioEngine.inputNode
         let recordingFormat = inputNode.outputFormat(forBus: 0)
-        
+
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer, when) in
             self.recognitionRequest?.append(buffer)
             self.updateVolume(from: buffer)
         }
-        
+
         audioEngine.prepare()
-        try audioEngine.start()
-        
+        do {
+            try audioEngine.start()
+        } catch {
+            // Fallback: recreate engine and retry once
+            audioEngine.inputNode.removeTap(onBus: 0)
+            audioEngine = AVAudioEngine()
+            AudioDeviceManager.shared.bindEngine(audioEngine, toDeviceUID: SettingsManager.shared.selectedInputDeviceUID)
+            let fallbackNode = audioEngine.inputNode
+            let fallbackFormat = fallbackNode.outputFormat(forBus: 0)
+            fallbackNode.installTap(onBus: 0, bufferSize: 1024, format: fallbackFormat) { (buffer, when) in
+                self.recognitionRequest?.append(buffer)
+                self.updateVolume(from: buffer)
+            }
+            audioEngine.prepare()
+            try audioEngine.start()
+        }
+
         recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest) { result, error in
             var isFinal = false
             

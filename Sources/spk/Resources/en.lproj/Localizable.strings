@@ -13,6 +13,8 @@
 "general.clipboard.subtitle" = "Save final output automatically";
 "general.history.title" = "Record History";
 "general.history.subtitle" = "Save transcriptions (max 20 entries)";
+"general.inputDevice.title" = "Input Device";
+"general.inputDevice.systemDefault" = "System Default";
 
 /* APISettingsView */
 "api.title" = "API Settings";

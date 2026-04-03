@@ -13,6 +13,8 @@
 "general.clipboard.subtitle" = "自动保存最终结果";
 "general.history.title" = "记录历史";
 "general.history.subtitle" = "保存转录记录（最多 20 条）";
+"general.inputDevice.title" = "输入设备";
+"general.inputDevice.systemDefault" = "系统默认";
 
 /* APISettingsView */
 "api.title" = "API 设置";

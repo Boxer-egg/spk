@@ -13,6 +13,8 @@
 "general.clipboard.subtitle" = "Endergebnis automatisch speichern";
 "general.history.title" = "Verlauf aufzeichnen";
 "general.history.subtitle" = "Transkriptionen speichern (max. 20 Einträge)";
+"general.inputDevice.title" = "Eingabegerät";
+"general.inputDevice.systemDefault" = "Systemstandard";
 
 /* APISettingsView */
 "api.title" = "API-Einstellungen";
