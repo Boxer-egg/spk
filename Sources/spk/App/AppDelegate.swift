@@ -256,12 +256,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             item.isEnabled = false
             historyMenu.addItem(item)
         } else {
-            for entry in entries.prefix(10) { // 最多显示10条
+            let maxChars = 50
+            for entry in entries.prefix(10) {
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateStyle = .short
                 dateFormatter.timeStyle = .short
                 let dateStr = dateFormatter.string(from: entry.timestamp)
-                let title = "\(dateStr): \(entry.refinedText ?? entry.originalText)"
+                let prefix = "\(dateStr): "
+                let text = entry.refinedText ?? entry.originalText
+                let title: String
+                if prefix.count + text.count > maxChars {
+                    let remain = maxChars - prefix.count - 3
+                    title = prefix + String(text.prefix(max(0, remain))) + "..."
+                } else {
+                    title = prefix + text
+                }
                 let item = NSMenuItem(title: title, action: #selector(selectHistoryItem(_:)), keyEquivalent: "")
                 item.representedObject = entry
                 historyMenu.addItem(item)
@@ -272,6 +281,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                 moreItem.isEnabled = false
                 historyMenu.addItem(moreItem)
             }
+            historyMenu.addItem(NSMenuItem.separator())
+            let clearItem = NSMenuItem(title: "Clear History...", action: #selector(clearHistory(_:)), keyEquivalent: "")
+            historyMenu.addItem(clearItem)
         }
     }
 
@@ -281,5 +293,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         // 暂时仅复制到剪贴板
         let text = entry.refinedText ?? entry.originalText
         ClipboardManager.shared.pasteText(text, keepInClipboard: true)
+    }
+
+    @objc func clearHistory(_ sender: NSMenuItem?) {
+        let alert = NSAlert()
+        alert.messageText = "Clear History?"
+        alert.informativeText = "确定要清除所有历史记录吗？此操作无法撤销。"
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Clear")
+        alert.addButton(withTitle: "Cancel")
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            HistoryManager.shared.clearHistory()
+            updateHistoryMenu()
+        }
     }
 }
