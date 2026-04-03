@@ -88,7 +88,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     private func setupMenuBar() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = statusItem?.button {
-            button.image = NSImage(systemSymbolName: "mic.fill", accessibilityDescription: "Spk")
+            button.image = composedMenuBarIcon(badgeColor: nil)
         }
 
         let menu = NSMenu()
@@ -199,6 +199,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     private func startRecordingProcess() {
         guard !isRecording else { return }
         isRecording = true
+        updateMenuBarIcon(badgeColor: .systemRed)
         HUDViewModel.shared.reset()
         HUDViewModel.shared.isVisible = true
         HUDPanel.shared.show()
@@ -208,6 +209,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             print("Failed to start recording: \(error)")
             HUDViewModel.shared.state = .error
             isRecording = false
+            updateMenuBarIcon(badgeColor: nil)
         }
     }
     
@@ -234,6 +236,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         if SettingsManager.shared.isLLMEnabled {
             HUDViewModel.shared.state = .refining
             HUDViewModel.shared.text = text // Show original text while refining
+            updateMenuBarIcon(badgeColor: .systemBlue)
 
             LLMManager.shared.refineText(text) { result in
                 DispatchQueue.main.async {
@@ -253,6 +256,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                     // Delay hiding to let user see the final result
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         HUDViewModel.shared.isVisible = false
+                        self.updateMenuBarIcon(badgeColor: nil)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             HUDPanel.shared.hide()
                         }
@@ -261,6 +265,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             }
         } else {
             HUDViewModel.shared.state = .success
+            updateMenuBarIcon(badgeColor: nil)
             ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
             HistoryManager.shared.addEntry(originalText: text, refinedText: nil)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -273,6 +278,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     func speechManager(_ manager: SpeechManager, didFailWithError error: Error) {
         print("Speech Error: \(error)")
         HUDViewModel.shared.state = .error
+        updateMenuBarIcon(badgeColor: nil)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             HUDViewModel.shared.isVisible = false
             HUDPanel.shared.hide()
@@ -352,6 +358,36 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             HistoryManager.shared.clearHistory()
             updateHistoryMenu()
         }
+    }
+
+    private func updateMenuBarIcon(badgeColor: NSColor? = nil) {
+        guard let button = statusItem?.button else { return }
+        button.image = composedMenuBarIcon(badgeColor: badgeColor)
+    }
+
+    private func composedMenuBarIcon(badgeColor: NSColor?) -> NSImage {
+        let size = NSSize(width: 18, height: 18)
+        let image = NSImage(size: size, flipped: false) { rect in
+            if let base = NSImage(systemSymbolName: "waveform.and.mic", accessibilityDescription: "Spk") {
+                let config = NSImage.SymbolConfiguration(pointSize: 14, weight: .regular)
+                    .applying(NSImage.SymbolConfiguration(paletteColors: [.labelColor]))
+                let configured = base.withSymbolConfiguration(config) ?? base
+                configured.draw(in: rect)
+            }
+            if let color = badgeColor {
+                let badgeRadius: CGFloat = 3
+                let badgeRect = NSRect(
+                    x: rect.maxX - badgeRadius * 2.2,
+                    y: rect.maxY - badgeRadius * 2.2,
+                    width: badgeRadius * 2,
+                    height: badgeRadius * 2
+                )
+                color.setFill()
+                NSBezierPath(ovalIn: badgeRect).fill()
+            }
+            return true
+        }
+        return image
     }
 }
 
