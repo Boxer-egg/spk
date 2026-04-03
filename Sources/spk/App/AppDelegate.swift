@@ -195,6 +195,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     
     // MARK: - KeyboardManagerDelegate
     private var isRecording = false
+    private var currentAudioFilename: String?
 
     func triggerPressed(down: Bool) {
         if down {
@@ -215,6 +216,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     private func startRecordingProcess() {
         guard !isRecording else { return }
         isRecording = true
+        currentAudioFilename = nil
+        if SettingsManager.shared.isHistoryAudioEnabled {
+            if let url = AudioRecorderManager.shared.startRecording() {
+                currentAudioFilename = url.lastPathComponent
+            }
+        }
         updateMenuBarIcon(badgeColor: .systemRed)
         HUDViewModel.shared.reset()
         HUDViewModel.shared.isVisible = true
@@ -233,6 +240,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         guard isRecording else { return }
         isRecording = false
         speechManager.stopRecording()
+        if SettingsManager.shared.isHistoryAudioEnabled {
+            _ = AudioRecorderManager.shared.stopRecording()
+        }
     }
     
     // MARK: - SpeechManagerDelegate
@@ -261,13 +271,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                         HUDViewModel.shared.text = refined
                         HUDViewModel.shared.state = .success
                         ClipboardManager.shared.pasteText(refined, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
-                        HistoryManager.shared.addEntry(originalText: text, refinedText: refined)
+                        HistoryManager.shared.addEntry(originalText: text, refinedText: refined, audioFilename: self.currentAudioFilename)
                     case .failure(let error):
                         print("LLM Error: \(error)")
                         HUDViewModel.shared.state = .error
                         ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
-                        HistoryManager.shared.addEntry(originalText: text, refinedText: nil)
+                        HistoryManager.shared.addEntry(originalText: text, refinedText: nil, audioFilename: self.currentAudioFilename)
                     }
+
+                    self.currentAudioFilename = nil
 
                     // Delay hiding to let user see the final result
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -283,11 +295,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             HUDViewModel.shared.state = .success
             updateMenuBarIcon(badgeColor: nil)
             ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
-            HistoryManager.shared.addEntry(originalText: text, refinedText: nil)
+            HistoryManager.shared.addEntry(originalText: text, refinedText: nil, audioFilename: self.currentAudioFilename)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 HUDViewModel.shared.isVisible = false
                 HUDPanel.shared.hide()
             }
+            self.currentAudioFilename = nil
         }
     }
     
@@ -380,6 +393,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                 viewOriginalItem.representedObject = entry
                 submenu.addItem(viewOriginalItem)
 
+                let openAudioItem = NSMenuItem(title: NSLocalizedString("menu.history.openAudio", comment: ""), action: #selector(openHistoryAudio(_:)), keyEquivalent: "")
+                openAudioItem.representedObject = entry
+                if entry.audioFilename == nil {
+                    openAudioItem.isEnabled = false
+                }
+                submenu.addItem(openAudioItem)
+
                 item.submenu = submenu
                 historyMenu.addItem(item)
             }
@@ -399,6 +419,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         guard let entry = sender.representedObject as? HistoryEntry else { return }
         let text = entry.refinedText ?? entry.originalText
         ClipboardManager.shared.pasteText(text, keepInClipboard: true)
+    }
+
+    @objc func openHistoryAudio(_ sender: NSMenuItem) {
+        guard let entry = sender.representedObject as? HistoryEntry,
+              let filename = entry.audioFilename else { return }
+        let appSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let tapeDir = appSupportDir.appendingPathComponent("spk/tape", isDirectory: true)
+        let url = tapeDir.appendingPathComponent(filename)
+        if FileManager.default.fileExists(atPath: url.path) {
+            NSWorkspace.shared.open(url)
+        }
     }
 
     @objc func viewOriginalHistoryItem(_ sender: NSMenuItem) {
