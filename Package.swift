@@ -2,19 +2,19 @@
 import PackageDescription
 
 let package = Package(
-    name: "spk",
+    name: "Spk",
     platforms: [
         .macOS(.v14)
     ],
     products: [
-        .executable(name: "spk", targets: ["spk"])
+        .executable(name: "Spk", targets: ["Spk"])
     ],
     dependencies: [
         .package(url: "https://github.com/jpsim/Yams.git", from: "5.0.0")
     ],
     targets: [
         .executableTarget(
-            name: "spk",
+            name: "Spk",
             dependencies: [
                 .product(name: "Yams", package: "Yams")
             ],

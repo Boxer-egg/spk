@@ -4,7 +4,7 @@ import Speech
 import AVFoundation
 
 @main
-class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, SpeechManagerDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, SpeechManagerDelegate, NSMenuDelegate {
     static func main() {
         let app = NSApplication.shared
         let delegate = AppDelegate()
@@ -18,6 +18,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     let hudPanel = HUDPanel.shared
     
     var settingsWindow: NSWindow?
+    var historyMenuItem: NSMenuItem?
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory) // Force LSUIElement behavior
@@ -63,7 +64,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     private func setupMenuBar() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = statusItem?.button {
-            button.image = NSImage(systemSymbolName: "mic.fill", accessibilityDescription: "spk")
+            button.image = NSImage(systemSymbolName: "mic.fill", accessibilityDescription: "Spk")
         }
         
         let menu = NSMenu()
@@ -79,7 +80,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         let langMenuItem = NSMenuItem(title: "Language", action: nil, keyEquivalent: "")
         langMenuItem.submenu = langMenu
         menu.addItem(langMenuItem)
-        
+
+        // History
+        let historyMenu = NSMenu()
+        let historyMenuItem = NSMenuItem(title: "History", action: nil, keyEquivalent: "")
+        historyMenuItem.submenu = historyMenu
+        menu.addItem(historyMenuItem)
+        self.historyMenuItem = historyMenuItem
+
         menu.addItem(NSMenuItem.separator())
         
         // LLM Toggle
@@ -90,7 +98,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Settings...", action: #selector(openSettings), keyEquivalent: ","))
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
-        
+        menu.delegate = self
         statusItem?.menu = menu
     }
     
@@ -127,7 +135,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             let view = SettingsView()
             let controller = NSHostingController(rootView: view)
             settingsWindow = NSWindow(contentViewController: controller)
-            settingsWindow?.title = "spk Settings"
+            settingsWindow?.title = "Spk Settings"
             settingsWindow?.styleMask = [.titled, .closable]
             settingsWindow?.level = .floating
         }
@@ -196,10 +204,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                         HUDViewModel.shared.text = refined
                         HUDViewModel.shared.state = .success
                         ClipboardManager.shared.pasteText(refined, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
+                        HistoryManager.shared.addEntry(originalText: text, refinedText: refined)
                     case .failure(let error):
                         print("LLM Error: \(error)")
                         HUDViewModel.shared.state = .error
                         ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
+                        HistoryManager.shared.addEntry(originalText: text, refinedText: nil)
                     }
                     
                     // Delay hiding to let user see the final result
@@ -214,6 +224,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         } else {
             HUDViewModel.shared.state = .success
             ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
+            HistoryManager.shared.addEntry(originalText: text, refinedText: nil)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 HUDViewModel.shared.isVisible = false
                 HUDPanel.shared.hide()
@@ -228,5 +239,47 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             HUDViewModel.shared.isVisible = false
             HUDPanel.shared.hide()
         }
+    }
+
+    // MARK: - NSMenuDelegate
+    func menuWillOpen(_ menu: NSMenu) {
+        updateHistoryMenu()
+    }
+
+    private func updateHistoryMenu() {
+        guard let historyMenu = historyMenuItem?.submenu else { return }
+        historyMenu.removeAllItems()
+
+        let entries = HistoryManager.shared.getEntries()
+        if entries.isEmpty {
+            let item = NSMenuItem(title: "No history", action: nil, keyEquivalent: "")
+            item.isEnabled = false
+            historyMenu.addItem(item)
+        } else {
+            for entry in entries.prefix(10) { // 最多显示10条
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateStyle = .short
+                dateFormatter.timeStyle = .short
+                let dateStr = dateFormatter.string(from: entry.timestamp)
+                let title = "\(dateStr): \(entry.refinedText ?? entry.originalText)"
+                let item = NSMenuItem(title: title, action: #selector(selectHistoryItem(_:)), keyEquivalent: "")
+                item.representedObject = entry
+                historyMenu.addItem(item)
+            }
+            if entries.count > 10 {
+                historyMenu.addItem(NSMenuItem.separator())
+                let moreItem = NSMenuItem(title: "\(entries.count - 10) more entries", action: nil, keyEquivalent: "")
+                moreItem.isEnabled = false
+                historyMenu.addItem(moreItem)
+            }
+        }
+    }
+
+    @objc func selectHistoryItem(_ sender: NSMenuItem) {
+        guard let entry = sender.representedObject as? HistoryEntry else { return }
+        // 将文本复制到剪贴板或粘贴？
+        // 暂时仅复制到剪贴板
+        let text = entry.refinedText ?? entry.originalText
+        ClipboardManager.shared.pasteText(text, keepInClipboard: true)
     }
 }

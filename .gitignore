@@ -1,6 +1,6 @@
 .DS_Store
 /.build
-/spk.app
+/Spk.app
 *.swp
 *.lock
 .gemini/

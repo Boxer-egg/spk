@@ -20,33 +20,33 @@ jobs:
       - name: Build and Sign
         run: |
           make all
-          echo "Build completed, checking spk.app structure..."
+          echo "Build completed, checking Spk.app structure..."
           ls -la
-          ls -la spk.app/ || true
-          ls -la spk.app/Contents/ || true
-          ls -la spk.app/Contents/MacOS/ || true
+          ls -la Spk.app/ || true
+          ls -la Spk.app/Contents/ || true
+          ls -la Spk.app/Contents/MacOS/ || true
 
       - name: Archive
         run: |
           echo "Creating zip archive..."
-          zip -r spk.zip spk.app
+          zip -r Spk.zip Spk.app
           echo "Zip file created:"
-          unzip -l spk.zip | head -20
+          unzip -l Spk.zip | head -20
 
       - name: Check zip file before release
         run: |
-          echo "Checking if spk.zip exists..."
-          ls -la spk.zip
+          echo "Checking if Spk.zip exists..."
+          ls -la Spk.zip
           echo "File size:"
-          du -h spk.zip
+          du -h Spk.zip
           echo "Zip contents:"
-          unzip -l spk.zip | head -30
+          unzip -l Spk.zip | head -30
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: spk.zip
+          files: Spk.zip
           draft: false
           generate_release_notes: true
 

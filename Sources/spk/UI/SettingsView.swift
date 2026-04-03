@@ -25,6 +25,13 @@ struct SettingsView: View {
                         Text("When enabled, the final output will be copied to your clipboard automatically.")
                             .font(.caption)
                             .foregroundColor(.secondary)
+
+                        Divider()
+
+                        Toggle("Record History", isOn: $settings.isHistoryEnabled)
+                        Text("When enabled, your transcriptions will be saved in history (max 20 entries).")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
                 }
                 .tabItem {

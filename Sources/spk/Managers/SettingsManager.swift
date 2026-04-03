@@ -71,12 +71,19 @@ class SettingsManager: ObservableObject {
         }
     }
 
+    @Published var isHistoryEnabled: Bool {
+        didSet {
+            config["isHistoryEnabled"] = isHistoryEnabled
+            saveConfig()
+        }
+    }
+
     private init() {
         // 配置文件路径：~/.config/spk/
         let homeURL = FileManager.default.homeDirectoryForCurrentUser
         let configDir = homeURL.appendingPathComponent(".config/spk", isDirectory: true)
         self.configURL = configDir.appendingPathComponent("config.yaml")
-        self.systemPromptURL = configDir.appendingPathComponent("system_prompt.yaml")
+        self.systemPromptURL = configDir.appendingPathComponent("system_prompt.txt")
 
         // 确保目录存在
         try? FileManager.default.createDirectory(at: configDir, withIntermediateDirectories: true, attributes: nil)
@@ -95,7 +102,8 @@ class SettingsManager: ObservableObject {
             "systemPrompt",
             "isHoldToSpeak",
             "triggerKey",
-            "isCopyToClipboardEnabled"
+            "isCopyToClipboardEnabled",
+            "isHistoryEnabled"
         ]
         var migrated = false
         for key in keysToMigrate {
@@ -112,6 +120,7 @@ class SettingsManager: ObservableObject {
         // 设置默认值（如果配置中不存在）
         self.isLLMEnabled = (config["isLLMEnabled"] as? Bool) ?? false
         self.isCopyToClipboardEnabled = (config["isCopyToClipboardEnabled"] as? Bool) ?? false
+        self.isHistoryEnabled = (config["isHistoryEnabled"] as? Bool) ?? true
         self.selectedLanguage = Language(rawValue: config["selectedLanguage"] as? String ?? "zh-CN") ?? .zhCN
         self.apiBaseURL = config["apiBaseURL"] as? String ?? "https://api.openai.com/v1"
         self.apiKey = config["apiKey"] as? String ?? ""
@@ -123,6 +132,7 @@ class SettingsManager: ObservableObject {
         // 确保配置字典包含当前值（用于首次运行）
         config["isLLMEnabled"] = isLLMEnabled
         config["isCopyToClipboardEnabled"] = isCopyToClipboardEnabled
+        config["isHistoryEnabled"] = isHistoryEnabled
         config["selectedLanguage"] = selectedLanguage.rawValue
         config["apiBaseURL"] = apiBaseURL
         config["apiKey"] = apiKey
@@ -167,19 +177,44 @@ class SettingsManager: ObservableObject {
     }
 
     private static func loadSystemPrompt(config: [String: Any], systemPromptURL: URL) -> String {
-        // 首先尝试从单独文件加载
-        if FileManager.default.fileExists(atPath: systemPromptURL.path) {
+        let fileManager = FileManager.default
+        let txtURL = systemPromptURL
+        let yamlURL = systemPromptURL.deletingPathExtension().appendingPathExtension("yaml")
+
+        // 首先尝试从 txt 文件加载
+        if fileManager.fileExists(atPath: txtURL.path) {
             do {
-                let yamlString = try String(contentsOf: systemPromptURL, encoding: .utf8)
+                return try String(contentsOf: txtURL, encoding: .utf8)
+            } catch {
+                print("Failed to load system prompt from \(txtURL.path): \(error)")
+            }
+        }
+
+        // 如果 txt 不存在，尝试从旧的 yaml 文件加载并迁移
+        if fileManager.fileExists(atPath: yamlURL.path) {
+            do {
+                let yamlString = try String(contentsOf: yamlURL, encoding: .utf8)
+                var prompt: String?
+
+                // 尝试解析 YAML 格式
                 if let loaded = try Yams.load(yaml: yamlString) as? [String: Any],
-                   let prompt = loaded["prompt"] as? String {
-                    return prompt
-                } else if let prompt = try Yams.load(yaml: yamlString) as? String {
-                    // 如果文件直接包含字符串（向后兼容）
+                   let yamlPrompt = loaded["prompt"] as? String {
+                    prompt = yamlPrompt
+                } else if let yamlPrompt = try Yams.load(yaml: yamlString) as? String {
+                    // 如果文件直接包含字符串
+                    prompt = yamlPrompt
+                }
+
+                if let prompt = prompt {
+                    // 迁移到 txt 文件
+                    try prompt.write(to: txtURL, atomically: true, encoding: .utf8)
+                    // 删除旧的 yaml 文件
+                    try fileManager.removeItem(at: yamlURL)
+                    print("Migrated system prompt from YAML to TXT format")
                     return prompt
                 }
             } catch {
-                print("Failed to load system prompt from \(systemPromptURL.path): \(error)")
+                print("Failed to load or migrate system prompt from \(yamlURL.path): \(error)")
             }
         }
 
@@ -197,9 +232,7 @@ class SettingsManager: ObservableObject {
 
     private func saveSystemPrompt() {
         do {
-            let promptDict = ["prompt": systemPrompt]
-            let yamlString = try Yams.dump(object: promptDict)
-            try yamlString.write(to: systemPromptURL, atomically: true, encoding: .utf8)
+            try systemPrompt.write(to: systemPromptURL, atomically: true, encoding: .utf8)
         } catch {
             print("Failed to save system prompt to \(systemPromptURL.path): \(error)")
         }

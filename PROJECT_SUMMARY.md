@@ -1,7 +1,7 @@
-# Project Memory: spk (macOS Voice Input App)
+# Project Memory: Spk (macOS Voice Input App)
 
 ## Overview
-**spk** is a professional-grade macOS menu bar application that provides real-time voice transcription with AI-powered refinement. It is built for macOS 14.0+.
+**Spk** is a professional-grade macOS menu bar application that provides real-time voice transcription with AI-powered refinement. It is built for macOS 14.0+.
 
 ## Tech Stack
 - **Language:** Swift 5.9
@@ -34,10 +34,10 @@
 
 ## Build & Release
 - **Build System:** SPM + Makefile.
-- **Packaging:** `make` generates a signed `spk.app` bundle with necessary entitlements for Sandbox/Permissions.
+- **Packaging:** `make` generates a signed `Spk.app` bundle with necessary entitlements for Sandbox/Permissions.
 - **Security:** No hardcoded secrets. All sensitive data is stored in local `UserDefaults`.
 
 ## Project History
-- **Initial:** Project "koe" (renamed to "spk").
+- **Initial:** Project "koe" (renamed to "Spk").
 - **Batch 2-3:** Added multi-line HUD, waveform animations, and tabbed settings.
 - **Batch 4 (Final):** Simplified shortcuts, refined HUD status area, and implemented full state synchronization.

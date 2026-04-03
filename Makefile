@@ -1,4 +1,4 @@
-APP_NAME=spk
+APP_NAME=Spk
 BUILD_DIR=.build/release
 APP_BUNDLE=$(APP_NAME).app
 CONTENTS=$(APP_BUNDLE)/Contents
