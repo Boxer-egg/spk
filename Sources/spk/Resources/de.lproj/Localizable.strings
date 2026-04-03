@@ -13,6 +13,10 @@
 "general.clipboard.subtitle" = "Endergebnis automatisch speichern";
 "general.history.title" = "Verlauf aufzeichnen";
 "general.history.subtitle" = "Transkriptionen speichern (max. 20 Einträge)";
+"general.history.text.title" = "Textaufzeichnung speichern";
+"general.history.text.subtitle" = "Transkription wird immer gespeichert";
+"general.history.audio.title" = "Audioaufzeichnung speichern";
+"general.history.audio.subtitle" = "Originalaudio auch aufzeichnen (m4a)";
 /* APISettingsView */
 "api.title" = "API-Einstellungen";
 "api.baseURL" = "API-Basis-URL";
@@ -61,6 +65,7 @@
 "menu.inputDevice" = "Eingabegerät";
 "menu.inputDevice.systemDefault" = "Systemstandard";
 "menu.history.paste" = "Einfügen";
+"menu.history.openAudio" = "Originalaudio öffnen";
 "menu.history.viewOriginal" = "Original anzeigen...";
 "menu.history.original.title" = "Originaltext";
 "menu.history.original.copy" = "Kopieren";

@@ -13,6 +13,10 @@
 "general.clipboard.subtitle" = "Save final output automatically";
 "general.history.title" = "Record History";
 "general.history.subtitle" = "Save transcriptions (max 20 entries)";
+"general.history.text.title" = "Save Text Record";
+"general.history.text.subtitle" = "Transcription always saved";
+"general.history.audio.title" = "Save Audio Record";
+"general.history.audio.subtitle" = "Also record original audio (m4a)";
 /* APISettingsView */
 "api.title" = "API Settings";
 "api.baseURL" = "API Base URL";
@@ -61,6 +65,7 @@
 "menu.inputDevice" = "Input Device";
 "menu.inputDevice.systemDefault" = "System Default";
 "menu.history.paste" = "Paste";
+"menu.history.openAudio" = "Open Original Audio";
 "menu.history.viewOriginal" = "View Original...";
 "menu.history.original.title" = "Original Text";
 "menu.history.original.copy" = "Copy";

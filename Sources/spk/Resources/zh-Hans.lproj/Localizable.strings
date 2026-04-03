@@ -13,6 +13,10 @@
 "general.clipboard.subtitle" = "自动保存最终结果";
 "general.history.title" = "记录历史";
 "general.history.subtitle" = "保存转录记录（最多 20 条）";
+"general.history.text.title" = "保存文字记录";
+"general.history.text.subtitle" = "转录结果（始终保存）";
+"general.history.audio.title" = "保存音频记录";
+"general.history.audio.subtitle" = "同时录制原始音频（m4a）";
 /* APISettingsView */
 "api.title" = "API 设置";
 "api.baseURL" = "API 基础地址";
@@ -61,6 +65,7 @@
 "menu.inputDevice" = "输入设备";
 "menu.inputDevice.systemDefault" = "系统默认";
 "menu.history.paste" = "粘贴此内容";
+"menu.history.openAudio" = "打开原始音频";
 "menu.history.viewOriginal" = "查看原始内容...";
 "menu.history.original.title" = "原始内容";
 "menu.history.original.copy" = "复制";
