@@ -125,10 +125,10 @@ struct APISettingsView: View {
                 isTesting = false
                 testDuration = Date().timeIntervalSince(start)
                 switch result {
-                case .success(let msg):
-                    testStatus = msg
+                case .success:
+                    testStatus = NSLocalizedString("api.status.success", comment: "")
                 case .failure(let error):
-                    testStatus = "Error: \(error.localizedDescription)"
+                    testStatus = String(format: NSLocalizedString("api.status.error", comment: ""), error.localizedDescription)
                 }
             }
         }

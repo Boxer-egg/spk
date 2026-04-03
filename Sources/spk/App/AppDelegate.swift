@@ -19,7 +19,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     
     var settingsWindow: NSWindow?
     var historyMenuItem: NSMenuItem?
-    var statsCardItem: NSMenuItem?
+    var statsTodayItem: NSMenuItem?
+    var statsWordsItem: NSMenuItem?
 
     private var statisticsTodayKey: String {
         let formatter = DateFormatter()
@@ -66,8 +67,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         mainMenu.addItem(editMenuItem)
         
         let editMenu = NSMenu(title: "Edit")
-        editMenu.addItem(withTitle: "Undo", action: #selector(UndoManager.undo), keyEquivalent: "z")
-        editMenu.addItem(withTitle: "Redo", action: #selector(UndoManager.redo), keyEquivalent: "Z")
+        editMenu.addItem(withTitle: "Undo", action: Selector(("undo:")), keyEquivalent: "z")
+        editMenu.addItem(withTitle: "Redo", action: Selector(("redo:")), keyEquivalent: "Z")
         editMenu.addItem(NSMenuItem.separator())
         editMenu.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
         editMenu.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
@@ -122,11 +123,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.settings", comment: ""), action: #selector(openSettings), keyEquivalent: ","))
 
-        // Statistics Card
-        let cardItem = NSMenuItem()
-        cardItem.isEnabled = false
-        menu.addItem(cardItem)
-        self.statsCardItem = cardItem
+        // Statistics Items
+        let todayItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
+        todayItem.isEnabled = false
+        menu.addItem(todayItem)
+        self.statsTodayItem = todayItem
+
+        let wordsItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
+        wordsItem.isEnabled = false
+        menu.addItem(wordsItem)
+        self.statsWordsItem = wordsItem
 
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.quit", comment: ""), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
@@ -288,11 +294,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     // MARK: - NSMenuDelegate
     func menuWillOpen(_ menu: NSMenu) {
         updateHistoryMenu()
-        if let cardItem = statsCardItem {
-            let hostingView = NSHostingView(rootView: StatsCardMenuView(today: statisticsTodayCount, words: statisticsTotalWords))
-            hostingView.frame = NSRect(x: 0, y: 0, width: 200, height: 56)
-            cardItem.view = hostingView
-        }
+        statsTodayItem?.title = String(format: NSLocalizedString("menu.statistics.today", comment: ""), statisticsTodayCount)
+        statsWordsItem?.title = String(format: NSLocalizedString("menu.statistics.words", comment: ""), statisticsTotalWords)
     }
 
     private func updateHistoryMenu() {
@@ -391,24 +394,3 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     }
 }
 
-private struct StatsCardMenuView: View {
-    let today: Int
-    let words: Int
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(String(format: NSLocalizedString("menu.statistics.today", comment: ""), today))
-            Text(String(format: NSLocalizedString("menu.statistics.words", comment: ""), words))
-        }
-        .font(.system(size: 12, weight: .medium))
-        .foregroundColor(.primary)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color(nsColor: .controlBackgroundColor))
-        )
-        .padding(4)
-    }
-}
