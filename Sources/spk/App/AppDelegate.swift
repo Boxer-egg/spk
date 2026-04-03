@@ -230,6 +230,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             try speechManager.startRecording()
         } catch {
             print("Failed to start recording: \(error)")
+            if SettingsManager.shared.isHistoryAudioEnabled {
+                _ = AudioRecorderManager.shared.stopRecording()
+            }
+            currentAudioFilename = nil
             HUDViewModel.shared.state = .error
             isRecording = false
             updateMenuBarIcon(badgeColor: nil)
