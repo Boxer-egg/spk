@@ -20,17 +20,21 @@ class HistoryManager {
     static let shared = HistoryManager()
 
     private let historyURL: URL
+    private let tapeDirectoryURL: URL
     private var entries: [HistoryEntry] = []
     private let maxEntries = 20
 
     private init() {
-        // 配置文件路径：~/.config/spk/
         let homeURL = FileManager.default.homeDirectoryForCurrentUser
         let configDir = homeURL.appendingPathComponent(".config/spk", isDirectory: true)
         self.historyURL = configDir.appendingPathComponent("history.json")
 
-        // 确保目录存在
+        let appSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let spkSupportDir = appSupportDir.appendingPathComponent("spk", isDirectory: true)
+        self.tapeDirectoryURL = spkSupportDir.appendingPathComponent("tape", isDirectory: true)
+
         try? FileManager.default.createDirectory(at: configDir, withIntermediateDirectories: true, attributes: nil)
+        try? FileManager.default.createDirectory(at: tapeDirectoryURL, withIntermediateDirectories: true, attributes: nil)
 
         loadHistory()
     }
@@ -64,10 +68,16 @@ class HistoryManager {
         guard SettingsManager.shared.isHistoryEnabled else { return }
 
         let entry = HistoryEntry(originalText: originalText, refinedText: refinedText, audioFilename: audioFilename)
-        entries.insert(entry, at: 0) // 添加到开头（最新）
+        entries.insert(entry, at: 0)
 
-        // 限制条目数量
         if entries.count > maxEntries {
+            let removed = entries.suffix(entries.count - maxEntries)
+            for old in removed {
+                if let filename = old.audioFilename {
+                    let url = tapeDirectoryURL.appendingPathComponent(filename)
+                    try? FileManager.default.removeItem(at: url)
+                }
+            }
             entries = Array(entries.prefix(maxEntries))
         }
 
@@ -79,6 +89,12 @@ class HistoryManager {
     }
 
     func clearHistory() {
+        for entry in entries {
+            if let filename = entry.audioFilename {
+                let url = tapeDirectoryURL.appendingPathComponent(filename)
+                try? FileManager.default.removeItem(at: url)
+            }
+        }
         entries = []
         saveHistory()
     }
