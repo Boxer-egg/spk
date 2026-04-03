@@ -28,11 +28,55 @@ struct GeneralSettingsView: View {
 
                         Divider().padding(.leading, 12)
 
-                        toggleRow(
-                            title: NSLocalizedString("general.history.title", comment: ""),
-                            subtitle: NSLocalizedString("general.history.subtitle", comment: ""),
-                            isOn: $settings.isHistoryEnabled
-                        )
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text(NSLocalizedString("general.history.title", comment: ""))
+                                .font(.system(size: 13, weight: .medium))
+                                .padding(.horizontal, 14)
+                                .padding(.top, 10)
+                            Text(NSLocalizedString("general.history.subtitle", comment: ""))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 14)
+                                .padding(.bottom, 6)
+
+                            Divider().padding(.leading, 12)
+
+                            HStack(alignment: .center, spacing: 12) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(NSLocalizedString("general.history.text.title", comment: ""))
+                                        .font(.system(size: 13, weight: .medium))
+                                    Text(NSLocalizedString("general.history.text.subtitle", comment: ""))
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                Toggle("", isOn: .constant(true))
+                                    .toggleStyle(.switch)
+                                    .labelsHidden()
+                                    .disabled(true)
+                                    .opacity(0.6)
+                            }
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+
+                            Divider().padding(.leading, 12)
+
+                            HStack(alignment: .center, spacing: 12) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(NSLocalizedString("general.history.audio.title", comment: ""))
+                                        .font(.system(size: 13, weight: .medium))
+                                    Text(NSLocalizedString("general.history.audio.subtitle", comment: ""))
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                Toggle("", isOn: $settings.isHistoryAudioEnabled)
+                                    .toggleStyle(.switch)
+                                    .labelsHidden()
+                            }
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+                        }
                     }
                 }
 
