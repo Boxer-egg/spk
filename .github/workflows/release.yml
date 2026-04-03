@@ -3,13 +3,15 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: macos-latest
     permissions:
-      contents: write  # 需要此权限来创建 releases
+      contents: write # 需要此权限来创建 releases
     steps:
       - uses: actions/checkout@v4
 
