@@ -17,6 +17,8 @@ class AudioRecorderManager {
     }
 
     func startRecording() -> URL? {
+        guard recorder == nil else { return nil }
+
         let filename = "\(UUID().uuidString).m4a"
         let url = tapeDirectoryURL.appendingPathComponent(filename)
 
@@ -31,17 +33,22 @@ class AudioRecorderManager {
             let recorder = try AVAudioRecorder(url: url, settings: settings)
             recorder.prepareToRecord()
             let success = recorder.record()
-            guard success else { return nil }
+            guard success else {
+                try? FileManager.default.removeItem(at: url)
+                return nil
+            }
             self.recorder = recorder
             self.currentURL = url
             return url
         } catch {
             print("Failed to start audio recording: \(error)")
+            try? FileManager.default.removeItem(at: url)
             return nil
         }
     }
 
     func stopRecording() -> URL? {
+        guard recorder != nil else { return nil }
         recorder?.stop()
         let url = currentURL
         recorder = nil
