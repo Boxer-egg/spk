@@ -266,8 +266,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                 let text = entry.refinedText ?? entry.originalText
                 let title: String
                 if prefix.count + text.count > maxChars {
-                    let remain = maxChars - prefix.count - 3
-                    title = prefix + String(text.prefix(max(0, remain))) + "..."
+                    if prefix.count >= maxChars - 3 {
+                        title = String(prefix.prefix(maxChars - 3)) + "..."
+                    } else {
+                        let remain = maxChars - prefix.count - 3
+                        title = prefix + String(text.prefix(remain)) + "..."
+                    }
                 } else {
                     title = prefix + text
                 }
