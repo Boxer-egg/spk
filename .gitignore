@@ -4,5 +4,6 @@
 *.swp
 *.lock
 .gemini/
+.claude/
 
 gha-creds-*.json
