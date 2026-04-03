@@ -5,6 +5,7 @@
 *.lock
 .gemini/
 .claude/
+.superpowers/
 .worktrees/
 
 gha-creds-*.json
