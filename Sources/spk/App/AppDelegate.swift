@@ -312,6 +312,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         print("Speech Error: \(error)")
         HUDViewModel.shared.state = .error
         updateMenuBarIcon(badgeColor: nil)
+        if SettingsManager.shared.isHistoryAudioEnabled {
+            _ = AudioRecorderManager.shared.stopRecording()
+        }
+        currentAudioFilename = nil
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             HUDViewModel.shared.isVisible = false
             HUDPanel.shared.hide()
@@ -428,9 +432,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     @objc func openHistoryAudio(_ sender: NSMenuItem) {
         guard let entry = sender.representedObject as? HistoryEntry,
               let filename = entry.audioFilename else { return }
-        let appSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let tapeDir = appSupportDir.appendingPathComponent("spk/tape", isDirectory: true)
-        let url = tapeDir.appendingPathComponent(filename)
+        let url = AudioRecorderManager.shared.urlForAudio(named: filename)
         if FileManager.default.fileExists(atPath: url.path) {
             NSWorkspace.shared.open(url)
         }

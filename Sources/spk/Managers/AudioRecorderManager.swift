@@ -55,4 +55,8 @@ class AudioRecorderManager {
         currentURL = nil
         return url
     }
+
+    func urlForAudio(named filename: String) -> URL {
+        return tapeDirectoryURL.appendingPathComponent(filename)
+    }
 }
