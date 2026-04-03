@@ -19,8 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     
     var settingsWindow: NSWindow?
     var historyMenuItem: NSMenuItem?
-    var statsTodayItem: NSMenuItem?
-    var statsWordsItem: NSMenuItem?
+    var statsCardItem: NSMenuItem?
 
     private var statisticsTodayKey: String {
         let formatter = DateFormatter()
@@ -74,8 +73,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         editMenu.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
         editMenu.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
         editMenu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
-        
+
         editMenuItem.submenu = editMenu
+
+        let windowMenuItem = NSMenuItem()
+        mainMenu.addItem(windowMenuItem)
+        let windowMenu = NSMenu(title: "Window")
+        windowMenu.addItem(withTitle: "Close", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
+        windowMenuItem.submenu = windowMenu
+
         NSApp.mainMenu = mainMenu
     }
     
@@ -116,16 +122,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.settings", comment: ""), action: #selector(openSettings), keyEquivalent: ","))
 
-        // Statistics
-        let todayItem = NSMenuItem(title: String(format: NSLocalizedString("menu.statistics.today", comment: ""), statisticsTodayCount), action: nil, keyEquivalent: "")
-        todayItem.isEnabled = false
-        menu.addItem(todayItem)
-        self.statsTodayItem = todayItem
-
-        let wordsItem = NSMenuItem(title: String(format: NSLocalizedString("menu.statistics.words", comment: ""), statisticsTotalWords), action: nil, keyEquivalent: "")
-        wordsItem.isEnabled = false
-        menu.addItem(wordsItem)
-        self.statsWordsItem = wordsItem
+        // Statistics Card
+        let cardItem = NSMenuItem()
+        cardItem.isEnabled = false
+        menu.addItem(cardItem)
+        self.statsCardItem = cardItem
 
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.quit", comment: ""), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
@@ -281,8 +282,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     // MARK: - NSMenuDelegate
     func menuWillOpen(_ menu: NSMenu) {
         updateHistoryMenu()
-        statsTodayItem?.title = String(format: NSLocalizedString("menu.statistics.today", comment: ""), statisticsTodayCount)
-        statsWordsItem?.title = String(format: NSLocalizedString("menu.statistics.words", comment: ""), statisticsTotalWords)
+        if let cardItem = statsCardItem {
+            let hostingView = NSHostingView(rootView: StatsCardMenuView(today: statisticsTodayCount, words: statisticsTotalWords))
+            hostingView.frame = NSRect(x: 0, y: 0, width: 200, height: 56)
+            cardItem.view = hostingView
+        }
     }
 
     private func updateHistoryMenu() {
@@ -348,5 +352,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             HistoryManager.shared.clearHistory()
             updateHistoryMenu()
         }
+    }
+}
+
+private struct StatsCardMenuView: View {
+    let today: Int
+    let words: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(String(format: NSLocalizedString("menu.statistics.today", comment: ""), today))
+            Text(String(format: NSLocalizedString("menu.statistics.words", comment: ""), words))
+        }
+        .font(.system(size: 12, weight: .medium))
+        .foregroundColor(.primary)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color(nsColor: .controlBackgroundColor))
+        )
+        .padding(4)
     }
 }

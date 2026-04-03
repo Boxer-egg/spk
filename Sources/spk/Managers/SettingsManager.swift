@@ -126,7 +126,7 @@ class SettingsManager: ObservableObject {
         self.apiKey = config["apiKey"] as? String ?? ""
         self.model = config["model"] as? String ?? "gpt-3.5-turbo"
         self.systemPrompt = Self.loadSystemPrompt(config: config, systemPromptURL: systemPromptURL)
-        self.isHoldToSpeak = config["isHoldToSpeak"] as? Bool ?? true
+        self.isHoldToSpeak = config["isHoldToSpeak"] as? Bool ?? false
         self.triggerKey = config["triggerKey"] as? String ?? "Fn"
 
         // 确保配置字典包含当前值（用于首次运行）
