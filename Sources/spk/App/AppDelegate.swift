@@ -136,8 +136,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             let controller = NSHostingController(rootView: view)
             settingsWindow = NSWindow(contentViewController: controller)
             settingsWindow?.title = "Spk Settings"
-            settingsWindow?.styleMask = [.titled, .closable]
+            settingsWindow?.styleMask = [.titled, .closable, .miniaturizable]
             settingsWindow?.level = .floating
+            settingsWindow?.minSize = NSSize(width: 640, height: 420)
         }
         settingsWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)

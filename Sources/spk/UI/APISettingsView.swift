@@ -88,7 +88,7 @@ struct APISettingsView: View {
 
     private func statusConfiguration() -> (borderColor: Color, icon: String, message: String) {
         if testStatus.isEmpty {
-            return (Color.secondary.opacity(0.3), "info.circle", "点击上方按钮测试连接状态")
+            return (Color.secondary.opacity(0.3), "info.circle", "Click the button above to test connection status")
         } else if testStatus.contains("Successful") {
             return (.green, "checkmark.circle.fill", "\(testStatus)（耗时 \(String(format: "%.2f", testDuration))s）")
         } else {
