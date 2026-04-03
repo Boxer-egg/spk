@@ -2,7 +2,6 @@ import SwiftUI
 
 struct GeneralSettingsView: View {
     @ObservedObject var settings = SettingsManager.shared
-    @State private var inputDevices: [AudioDevice] = []
 
     var body: some View {
         ScrollView {
@@ -34,14 +33,6 @@ struct GeneralSettingsView: View {
                             subtitle: NSLocalizedString("general.history.subtitle", comment: ""),
                             isOn: $settings.isHistoryEnabled
                         )
-
-                        Divider().padding(.leading, 12)
-
-                        inputDeviceRow(
-                            title: NSLocalizedString("general.inputDevice.title", comment: ""),
-                            devices: inputDevices,
-                            selection: $settings.selectedInputDeviceUID
-                        )
                     }
                 }
 
@@ -57,9 +48,6 @@ struct GeneralSettingsView: View {
                 Spacer(minLength: 20)
             }
             .padding(20)
-        }
-        .onAppear {
-            inputDevices = AudioDeviceManager.shared.enumerateInputDevices()
         }
     }
 
@@ -90,33 +78,4 @@ struct GeneralSettingsView: View {
         .padding(.vertical, 10)
     }
 
-    @ViewBuilder
-    private func inputDeviceRow(title: String, devices: [AudioDevice], selection: Binding<String>) -> some View {
-        HStack(alignment: .center, spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.system(size: 13, weight: .medium))
-                let uid = selection.wrappedValue
-                if !uid.isEmpty, let device = devices.first(where: { $0.uid == uid }) {
-                    Text(device.name)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            Spacer()
-            Picker("", selection: selection) {
-                Text(NSLocalizedString("general.inputDevice.systemDefault", comment: ""))
-                    .tag("")
-                ForEach(devices) { device in
-                    Text(device.name)
-                        .tag(device.uid)
-                }
-            }
-            .pickerStyle(.menu)
-            .frame(maxWidth: 180)
-            .labelsHidden()
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-    }
 }

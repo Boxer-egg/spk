@@ -13,9 +13,6 @@
 "general.clipboard.subtitle" = "最終出力を自動保存";
 "general.history.title" = "履歴を記録";
 "general.history.subtitle" = "文字起こしを保存（最大 20 件）";
-"general.inputDevice.title" = "入力デバイス";
-"general.inputDevice.systemDefault" = "システムデフォルト";
-
 /* APISettingsView */
 "api.title" = "API 設定";
 "api.baseURL" = "API ベース URL";
@@ -61,3 +58,9 @@
 "menu.quit" = "終了";
 "menu.statistics.today" = "今日：%d";
 "menu.statistics.words" = "総文字数：%d";
+"menu.inputDevice" = "入力デバイス";
+"menu.inputDevice.systemDefault" = "システムデフォルト";
+"menu.history.paste" = "貼り付け";
+"menu.history.viewOriginal" = "元の内容を表示...";
+"menu.history.original.title" = "元の内容";
+"menu.history.original.close" = "閉じる";

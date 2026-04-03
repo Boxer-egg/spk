@@ -21,6 +21,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     var historyMenuItem: NSMenuItem?
     var statsTodayItem: NSMenuItem?
     var statsWordsItem: NSMenuItem?
+    var inputDeviceMenuItem: NSMenuItem?
 
     private var statisticsTodayKey: String {
         let formatter = DateFormatter()
@@ -133,6 +134,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         wordsItem.isEnabled = false
         menu.addItem(wordsItem)
         self.statsWordsItem = wordsItem
+
+        menu.addItem(NSMenuItem.separator())
+
+        // Input Device
+        let deviceMenu = NSMenu()
+        let deviceMenuItem = NSMenuItem(title: NSLocalizedString("menu.inputDevice", comment: ""), action: nil, keyEquivalent: "")
+        deviceMenuItem.submenu = deviceMenu
+        menu.addItem(deviceMenuItem)
+        self.inputDeviceMenuItem = deviceMenuItem
 
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.quit", comment: ""), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
@@ -294,8 +304,39 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     // MARK: - NSMenuDelegate
     func menuWillOpen(_ menu: NSMenu) {
         updateHistoryMenu()
+        updateInputDeviceMenu()
         statsTodayItem?.title = String(format: NSLocalizedString("menu.statistics.today", comment: ""), statisticsTodayCount)
         statsWordsItem?.title = String(format: NSLocalizedString("menu.statistics.words", comment: ""), statisticsTotalWords)
+    }
+
+    private func updateInputDeviceMenu() {
+        guard let deviceMenu = inputDeviceMenuItem?.submenu else { return }
+        deviceMenu.removeAllItems()
+
+        let devices = AudioDeviceManager.shared.enumerateInputDevices()
+        let systemDefaultItem = NSMenuItem(title: NSLocalizedString("menu.inputDevice.systemDefault", comment: ""), action: #selector(changeInputDevice(_:)), keyEquivalent: "")
+        systemDefaultItem.representedObject = nil
+        systemDefaultItem.state = SettingsManager.shared.selectedInputDeviceUID.isEmpty ? .on : .off
+        deviceMenu.addItem(systemDefaultItem)
+
+        if !devices.isEmpty {
+            deviceMenu.addItem(NSMenuItem.separator())
+            for device in devices {
+                let item = NSMenuItem(title: device.name, action: #selector(changeInputDevice(_:)), keyEquivalent: "")
+                item.representedObject = device.uid
+                item.state = (device.uid == SettingsManager.shared.selectedInputDeviceUID) ? .on : .off
+                deviceMenu.addItem(item)
+            }
+        }
+    }
+
+    @objc func changeInputDevice(_ sender: NSMenuItem) {
+        if let uid = sender.representedObject as? String {
+            SettingsManager.shared.selectedInputDeviceUID = uid
+        } else {
+            SettingsManager.shared.selectedInputDeviceUID = ""
+        }
+        updateMenuStates()
     }
 
     private func updateHistoryMenu() {
@@ -327,8 +368,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                 } else {
                     title = prefix + text
                 }
-                let item = NSMenuItem(title: title, action: #selector(selectHistoryItem(_:)), keyEquivalent: "")
+                let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
                 item.representedObject = entry
+
+                let submenu = NSMenu()
+                let pasteItem = NSMenuItem(title: NSLocalizedString("menu.history.paste", comment: ""), action: #selector(pasteHistoryItem(_:)), keyEquivalent: "")
+                pasteItem.representedObject = entry
+                submenu.addItem(pasteItem)
+
+                let viewOriginalItem = NSMenuItem(title: NSLocalizedString("menu.history.viewOriginal", comment: ""), action: #selector(viewOriginalHistoryItem(_:)), keyEquivalent: "")
+                viewOriginalItem.representedObject = entry
+                submenu.addItem(viewOriginalItem)
+
+                item.submenu = submenu
                 historyMenu.addItem(item)
             }
             if entries.count > 10 {
@@ -343,10 +395,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         }
     }
 
-    @objc func selectHistoryItem(_ sender: NSMenuItem) {
+    @objc func pasteHistoryItem(_ sender: NSMenuItem) {
         guard let entry = sender.representedObject as? HistoryEntry else { return }
         let text = entry.refinedText ?? entry.originalText
         ClipboardManager.shared.pasteText(text, keepInClipboard: true)
+    }
+
+    @objc func viewOriginalHistoryItem(_ sender: NSMenuItem) {
+        guard let entry = sender.representedObject as? HistoryEntry else { return }
+        let alert = NSAlert()
+        alert.messageText = NSLocalizedString("menu.history.original.title", comment: "")
+        alert.informativeText = entry.originalText
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: NSLocalizedString("menu.history.original.close", comment: ""))
+        alert.runModal()
     }
 
     @objc func clearHistory(_ sender: NSMenuItem?) {

@@ -13,9 +13,6 @@
 "general.clipboard.subtitle" = "自动保存最终结果";
 "general.history.title" = "记录历史";
 "general.history.subtitle" = "保存转录记录（最多 20 条）";
-"general.inputDevice.title" = "输入设备";
-"general.inputDevice.systemDefault" = "系统默认";
-
 /* APISettingsView */
 "api.title" = "API 设置";
 "api.baseURL" = "API 基础地址";
@@ -61,3 +58,9 @@
 "menu.quit" = "退出";
 "menu.statistics.today" = "今日使用次数：%d";
 "menu.statistics.words" = "总字数：%d";
+"menu.inputDevice" = "输入设备";
+"menu.inputDevice.systemDefault" = "系统默认";
+"menu.history.paste" = "粘贴此内容";
+"menu.history.viewOriginal" = "查看原始内容...";
+"menu.history.original.title" = "原始内容";
+"menu.history.original.close" = "关闭";

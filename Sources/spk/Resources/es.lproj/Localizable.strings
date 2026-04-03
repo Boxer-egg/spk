@@ -13,9 +13,6 @@
 "general.clipboard.subtitle" = "Guardar el resultado automáticamente";
 "general.history.title" = "Guardar historial";
 "general.history.subtitle" = "Guardar transcripciones (máx. 20)";
-"general.inputDevice.title" = "Dispositivo de entrada";
-"general.inputDevice.systemDefault" = "Predeterminado del sistema";
-
 /* APISettingsView */
 "api.title" = "Configuración de API";
 "api.baseURL" = "URL base de la API";
@@ -61,3 +58,9 @@
 "menu.quit" = "Salir";
 "menu.statistics.today" = "Hoy: %d";
 "menu.statistics.words" = "Palabras totales: %d";
+"menu.inputDevice" = "Dispositivo de entrada";
+"menu.inputDevice.systemDefault" = "Predeterminado del sistema";
+"menu.history.paste" = "Pegar";
+"menu.history.viewOriginal" = "Ver original...";
+"menu.history.original.title" = "Texto original";
+"menu.history.original.close" = "Cerrar";

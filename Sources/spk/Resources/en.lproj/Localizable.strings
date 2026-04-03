@@ -13,9 +13,6 @@
 "general.clipboard.subtitle" = "Save final output automatically";
 "general.history.title" = "Record History";
 "general.history.subtitle" = "Save transcriptions (max 20 entries)";
-"general.inputDevice.title" = "Input Device";
-"general.inputDevice.systemDefault" = "System Default";
-
 /* APISettingsView */
 "api.title" = "API Settings";
 "api.baseURL" = "API Base URL";
@@ -61,3 +58,9 @@
 "menu.quit" = "Quit";
 "menu.statistics.today" = "Today: %d";
 "menu.statistics.words" = "Total Words: %d";
+"menu.inputDevice" = "Input Device";
+"menu.inputDevice.systemDefault" = "System Default";
+"menu.history.paste" = "Paste";
+"menu.history.viewOriginal" = "View Original...";
+"menu.history.original.title" = "Original Text";
+"menu.history.original.close" = "Close";
