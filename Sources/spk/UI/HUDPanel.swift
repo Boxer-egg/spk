@@ -8,7 +8,7 @@ class HUDPanel: NSPanel {
     
     init() {
         super.init(
-            contentRect: NSRect(x: 0, y: 0, width: 400, height: 100),
+            contentRect: NSRect(x: 0, y: 0, width: 300, height: 80),
             styleMask: [.nonactivatingPanel, .fullSizeContentView],
             backing: .buffered,
             defer: false

@@ -29,15 +29,15 @@ struct HUDView: View {
             
             // Text Area
             Text(viewModel.text.isEmpty ? (viewModel.state == .listening ? "Listening..." : "Processing...") : viewModel.text)
-                .font(.system(size: 16, weight: .medium, design: .rounded))
+                .font(.system(size: 12, weight: .medium, design: .rounded))
                 .fixedSize(horizontal: false, vertical: true)
                 .multilineTextAlignment(.leading)
                 .foregroundColor(viewModel.text.isEmpty ? .secondary : .primary)
                 .frame(minWidth: 100)
                 .padding(.vertical, 8)
         }
-        .padding(.vertical, 20)
-        .padding(.horizontal, 28)
+        .padding(.vertical, 16)
+        .padding(.horizontal, 24)
         .frame(minWidth: 200, maxWidth: 600)
         .frame(minHeight: 70)
         .background(

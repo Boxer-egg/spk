@@ -9,11 +9,15 @@ let package = Package(
     products: [
         .executable(name: "spk", targets: ["spk"])
     ],
-    dependencies: [],
+    dependencies: [
+        .package(url: "https://github.com/jpsim/Yams.git", from: "5.0.0")
+    ],
     targets: [
         .executableTarget(
             name: "spk",
-            dependencies: [],
+            dependencies: [
+                .product(name: "Yams", package: "Yams")
+            ],
             path: "Sources/spk",
             exclude: ["Resources"]
         )
