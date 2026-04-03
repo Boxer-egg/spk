@@ -5,12 +5,14 @@ struct HistoryEntry: Codable {
     let timestamp: Date
     let originalText: String
     let refinedText: String?
+    let audioFilename: String?
 
-    init(originalText: String, refinedText: String?) {
+    init(originalText: String, refinedText: String?, audioFilename: String? = nil) {
         self.id = UUID()
         self.timestamp = Date()
         self.originalText = originalText
         self.refinedText = refinedText
+        self.audioFilename = audioFilename
     }
 }
 
