@@ -60,10 +60,10 @@ class HistoryManager {
         }
     }
 
-    func addEntry(originalText: String, refinedText: String?) {
+    func addEntry(originalText: String, refinedText: String?, audioFilename: String? = nil) {
         guard SettingsManager.shared.isHistoryEnabled else { return }
 
-        let entry = HistoryEntry(originalText: originalText, refinedText: refinedText)
+        let entry = HistoryEntry(originalText: originalText, refinedText: refinedText, audioFilename: audioFilename)
         entries.insert(entry, at: 0) // 添加到开头（最新）
 
         // 限制条目数量
