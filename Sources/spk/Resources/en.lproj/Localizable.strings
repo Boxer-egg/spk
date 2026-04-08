@@ -12,11 +12,13 @@
 "general.clipboard.title" = "Copy to Clipboard";
 "general.clipboard.subtitle" = "Save final output automatically";
 "general.history.title" = "Record History";
-"general.history.subtitle" = "Save transcriptions (max 20 entries)";
+"general.history.subtitle" = "Save transcriptions to local history (max 20 entries)";
 "general.history.text.title" = "Save Text Record";
-"general.history.text.subtitle" = "Transcription always saved";
+"general.history.text.subtitle" = "Keep transcriptions in history list";
 "general.history.audio.title" = "Save Audio Record";
 "general.history.audio.subtitle" = "Also record original audio (m4a)";
+"general.antimisclick.title" = "Anti-misclick Mode";
+"general.antimisclick.subtitle" = "Prevents HUD on short clicks (adds ~0.25s delay). Only effective in 'Hold to Speak' mode. Does not affect recording quality.";
 /* APISettingsView */
 "api.title" = "API Settings";
 "api.baseURL" = "API Base URL";
@@ -70,3 +72,8 @@
 "menu.history.original.title" = "Original Text";
 "menu.history.original.copy" = "Copy";
 "menu.history.original.close" = "Close";
+
+/* HUD */
+"hud.listening" = "Listening...";
+"hud.processing" = "Processing...";
+"hud.refining" = "Refining...";

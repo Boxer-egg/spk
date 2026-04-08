@@ -17,6 +17,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     let speechManager = SpeechManager()
     let hudPanel = HUDPanel.shared
     
+    private var hudShowWorkItem: DispatchWorkItem?
+    private var isHudVisible = false
     var settingsWindow: NSWindow?
     var historyMenuItem: NSMenuItem?
     var statsTodayItem: NSMenuItem?
@@ -219,25 +221,44 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     private func startRecordingProcess() {
         guard !isRecording else { return }
         isRecording = true
+        isHudVisible = false
         currentAudioFilename = nil
+        
+        // Start engine immediately to avoid missing audio
         if SettingsManager.shared.isHistoryAudioEnabled {
             if let url = AudioRecorderManager.shared.startRecording() {
                 currentAudioFilename = url.lastPathComponent
             }
         }
-        updateMenuBarIcon(badgeColor: .systemRed)
-        HUDViewModel.shared.reset()
-        HUDViewModel.shared.isVisible = true
-        HUDPanel.shared.show()
+        
         do {
             try speechManager.startRecording()
+            updateMenuBarIcon(badgeColor: .systemRed)
+            HUDViewModel.shared.reset()
+            
+            // HUD display logic
+            hudShowWorkItem?.cancel()
+            
+            let showWorkItem = DispatchWorkItem { [weak self] in
+                guard let self = self, self.isRecording else { return }
+                self.isHudVisible = true
+                HUDViewModel.shared.isVisible = true
+                HUDPanel.shared.show()
+            }
+            self.hudShowWorkItem = showWorkItem
+            
+            if SettingsManager.shared.isAntiMisclickEnabled {
+                DispatchQueue.main.asyncAfter(deadline: .now() + SettingsManager.shared.antiMisclickDelay, execute: showWorkItem)
+            } else {
+                showWorkItem.perform()
+            }
+            
         } catch {
             print("Failed to start recording: \(error)")
             if SettingsManager.shared.isHistoryAudioEnabled {
                 _ = AudioRecorderManager.shared.stopRecording()
             }
             currentAudioFilename = nil
-            HUDViewModel.shared.state = .error
             isRecording = false
             updateMenuBarIcon(badgeColor: nil)
         }
@@ -246,6 +267,26 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     private func stopRecordingProcess() {
         guard isRecording else { return }
         isRecording = false
+        
+        // Cancel pending HUD show
+        hudShowWorkItem?.cancel()
+        
+        if !isHudVisible {
+            // Anti-misclick triggered: short press, HUD was never shown
+            speechManager.stopRecording() // This will trigger didFinishWithText, we need to ignore it there
+            if SettingsManager.shared.isHistoryAudioEnabled {
+                _ = AudioRecorderManager.shared.stopRecording()
+                if let filename = currentAudioFilename {
+                    let url = AudioRecorderManager.shared.urlForAudio(named: filename)
+                    try? FileManager.default.removeItem(at: url)
+                }
+            }
+            updateMenuBarIcon(badgeColor: nil)
+            currentAudioFilename = nil
+            return
+        }
+        
+        // Normal flow
         speechManager.stopRecording()
         if SettingsManager.shared.isHistoryAudioEnabled {
             _ = AudioRecorderManager.shared.stopRecording()
@@ -262,6 +303,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     }
     
     func speechManager(_ manager: SpeechManager, didFinishWithText text: String) {
+        hudShowWorkItem = nil
+        
+        // If HUD was never visible (anti-misclick), don't process results
+        guard isHudVisible else {
+            isHudVisible = false
+            return
+        }
+        
         let wordCount = text.count
         statisticsTodayCount += 1
         statisticsTotalWords += wordCount
@@ -312,6 +361,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     }
     
     func speechManager(_ manager: SpeechManager, didFailWithError error: Error) {
+        hudShowWorkItem?.cancel()
+        hudShowWorkItem = nil
+        
+        guard isHudVisible else {
+            isHudVisible = false
+            return
+        }
+        
         print("Speech Error: \(error)")
         HUDViewModel.shared.state = .error
         updateMenuBarIcon(badgeColor: nil)

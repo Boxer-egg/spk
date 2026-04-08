@@ -25,3 +25,6 @@ sign:
 
 clean:
 	rm -rf .build $(APP_BUNDLE)
+
+run: all
+	./$(APP_BUNDLE)/Contents/MacOS/$(APP_NAME)

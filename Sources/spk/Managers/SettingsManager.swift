@@ -92,6 +92,20 @@ class SettingsManager: ObservableObject {
         }
     }
 
+    @Published var isAntiMisclickEnabled: Bool {
+        didSet {
+            config["isAntiMisclickEnabled"] = isAntiMisclickEnabled
+            saveConfig()
+        }
+    }
+
+    @Published var antiMisclickDelay: Double {
+        didSet {
+            config["antiMisclickDelay"] = antiMisclickDelay
+            saveConfig()
+        }
+    }
+
     private init() {
         // 配置文件路径：~/.config/spk/
         let homeURL = FileManager.default.homeDirectoryForCurrentUser
@@ -119,7 +133,9 @@ class SettingsManager: ObservableObject {
             "isCopyToClipboardEnabled",
             "isHistoryEnabled",
             "isHistoryAudioEnabled",
-            "selectedInputDeviceUID"
+            "selectedInputDeviceUID",
+            "isAntiMisclickEnabled",
+            "antiMisclickDelay"
         ]
         var migrated = false
         for key in keysToMigrate {
@@ -146,6 +162,8 @@ class SettingsManager: ObservableObject {
         self.isHoldToSpeak = config["isHoldToSpeak"] as? Bool ?? false
         self.triggerKey = config["triggerKey"] as? String ?? "Fn"
         self.selectedInputDeviceUID = config["selectedInputDeviceUID"] as? String ?? ""
+        self.isAntiMisclickEnabled = (config["isAntiMisclickEnabled"] as? Bool) ?? true
+        self.antiMisclickDelay = (config["antiMisclickDelay"] as? Double) ?? 0.25
 
         // 确保配置字典包含当前值（用于首次运行）
         config["isLLMEnabled"] = isLLMEnabled
@@ -160,6 +178,8 @@ class SettingsManager: ObservableObject {
         config["isHoldToSpeak"] = isHoldToSpeak
         config["triggerKey"] = triggerKey
         config["selectedInputDeviceUID"] = selectedInputDeviceUID
+        config["isAntiMisclickEnabled"] = isAntiMisclickEnabled
+        config["antiMisclickDelay"] = antiMisclickDelay
 
         // 如果主配置中还有旧的 systemPrompt，将其移除并迁移到单独文件
         if config["systemPrompt"] != nil {

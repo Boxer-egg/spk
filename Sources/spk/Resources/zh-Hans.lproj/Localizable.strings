@@ -12,12 +12,15 @@
 "general.clipboard.title" = "复制到剪贴板";
 "general.clipboard.subtitle" = "自动保存最终结果";
 "general.history.title" = "记录历史";
-"general.history.subtitle" = "保存转录记录（最多 20 条）";
+"general.history.subtitle" = "保存转录结果到本地（最多 20 条）";
 "general.history.text.title" = "保存文字记录";
-"general.history.text.subtitle" = "转录结果（始终保存）";
+"general.history.text.subtitle" = "在列表中保存转录文字";
 "general.history.audio.title" = "保存音频记录";
-"general.history.audio.subtitle" = "同时录制原始音频（m4a）";
+"general.history.audio.subtitle" = "同时记录并保存原始音频 (m4a)";
+"general.antimisclick.title" = "防误触模式";
+"general.antimisclick.subtitle" = "防止短促点击弹出 HUD（增加约 0.25s 延迟）。仅在“按住说话”模式下有效，不影响录音和识别效果。";
 /* APISettingsView */
+
 "api.title" = "API 设置";
 "api.baseURL" = "API 基础地址";
 "api.key" = "API 密钥";
@@ -70,3 +73,8 @@
 "menu.history.original.title" = "原始内容";
 "menu.history.original.copy" = "复制";
 "menu.history.original.close" = "关闭";
+
+/* HUD */
+"hud.listening" = "正在倾听...";
+"hud.processing" = "处理中...";
+"hud.refining" = "正在润色...";
