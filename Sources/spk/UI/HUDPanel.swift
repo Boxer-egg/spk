@@ -8,8 +8,8 @@ class HUDPanel: NSPanel {
     
     init() {
         super.init(
-            contentRect: NSRect(x: 0, y: 0, width: 300, height: 80),
-            styleMask: [.nonactivatingPanel, .fullSizeContentView],
+            contentRect: NSRect(x: 0, y: 0, width: 1, height: 1), // Initial small size, will resize
+            styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
         )
@@ -20,6 +20,8 @@ class HUDPanel: NSPanel {
         self.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         self.hasShadow = false
         self.ignoresMouseEvents = true
+        self.hidesOnDeactivate = false
+        self.appearance = NSAppearance(named: .vibrantDark)
         
         setupHostingView()
     }
@@ -28,18 +30,27 @@ class HUDPanel: NSPanel {
         let view = HUDView()
         let hosting = NSHostingView(rootView: view)
         hosting.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Ensure the hosting view itself doesn't have an opaque background
+        hosting.wantsLayer = true
+        hosting.layer?.backgroundColor = .clear
+        
         self.contentView = hosting
         self.hostingView = hosting
         
+        // Use constraints to let the hosting view determine its own size,
+        // but we'll manually update the window frame to match it.
         NSLayoutConstraint.activate([
-            hosting.centerXAnchor.constraint(equalTo: self.contentView!.centerXAnchor),
-            hosting.centerYAnchor.constraint(equalTo: self.contentView!.centerYAnchor)
+            hosting.leadingAnchor.constraint(equalTo: self.contentView!.leadingAnchor),
+            hosting.trailingAnchor.constraint(equalTo: self.contentView!.trailingAnchor),
+            hosting.topAnchor.constraint(equalTo: self.contentView!.topAnchor),
+            hosting.bottomAnchor.constraint(equalTo: self.contentView!.bottomAnchor)
         ])
     }
     
     func show() {
-        self.centerBottom()
-        self.alphaValue = 1 // HUDView handles inner animation via viewModel.isVisible
+        updateFrame()
+        self.alphaValue = 1
         self.orderFront(nil)
     }
     
@@ -47,12 +58,24 @@ class HUDPanel: NSPanel {
         self.orderOut(nil)
     }
     
-    private func centerBottom() {
+    func updateFrame() {
+        guard let hostingView = hostingView else { return }
+        
+        // Calculate the required size based on SwiftUI content
+        let targetSize = hostingView.intrinsicContentSize
+        if targetSize.width <= 0 || targetSize.height <= 0 { return }
+        
         if let screen = NSScreen.main {
             let screenRect = screen.visibleFrame
-            let x = (screenRect.width - self.frame.width) / 2 + screenRect.minX
+            let x = (screenRect.width - targetSize.width) / 2 + screenRect.minX
             let y = screenRect.minY + 40
-            self.setFrameOrigin(NSPoint(x: x, y: y))
+            
+            let newFrame = NSRect(x: x, y: y, width: targetSize.width, height: targetSize.height)
+            self.setFrame(newFrame, display: true, animate: false)
         }
+    }
+    
+    private func centerBottom() {
+        updateFrame()
     }
 }
