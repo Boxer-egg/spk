@@ -1,6 +1,6 @@
 import Foundation
 
-protocol Skill {
+protocol Skill: AnyObject {
     var metadata: SkillMetadata { get }
     func execute(context: inout SkillContext, args: [String: String], completion: @escaping (Result<Void, Error>) -> Void)
 }

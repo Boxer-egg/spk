@@ -1,18 +1,25 @@
 import Foundation
 
-class SkillRegistry {
+final class SkillRegistry {
     static let shared = SkillRegistry()
     private var skills: [String: Skill] = [:]
+    private let lock = NSLock()
 
     func register(_ skill: Skill) {
+        lock.lock()
+        defer { lock.unlock() }
         skills[skill.metadata.identifier] = skill
     }
 
     func skill(for identifier: String) -> Skill? {
+        lock.lock()
+        defer { lock.unlock() }
         return skills[identifier]
     }
 
     func allSkills() -> [Skill] {
+        lock.lock()
+        defer { lock.unlock() }
         return Array(skills.values)
     }
 
