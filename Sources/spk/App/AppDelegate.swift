@@ -53,6 +53,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         SkillRegistry.shared.register(FormatListSkill())
         SkillRegistry.shared.register(TranslateSkill())
         SkillRegistry.shared.register(OpenBrowserSkill())
+        SkillRegistry.shared.register(OpenAppSkill())
         SkillRegistry.shared.register(OpenFinderSkill())
         SkillRegistry.shared.register(TypeTextSkill())
         SkillRegistry.shared.register(PressKeySkill())

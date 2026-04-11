@@ -10,8 +10,23 @@ Instructions:
 - Do not add explanations or markdown formatting.
 
 Examples:
-User: "打开浏览器搜索 YouTube"
-Output: [{"skill":"open_browser","args":{}},{"skill":"type_text","args":{"text":"https://www.youtube.com"}},{"skill":"press_key","args":{"key":"return"}}]
+User: "打开浏览器搜索新闻"
+Output: [{"skill":"open_browser","args":{"url":"https://www.google.com/search?q=%E6%96%B0%E9%97%BB"}}]
+
+User: "打开浏览器"
+Output: [{"skill":"open_browser","args":{}}]
+
+User: "打开微信"
+Output: [{"skill":"open_app","args":{"name":"微信"}}]
+
+User: "打开bilibili"
+Output: [{"skill":"open_browser","args":{"url":"https://www.bilibili.com"}}]
+
+User: "打开bilibili，搜索勇哥餐饮"
+Output: [{"skill":"open_browser","args":{"url":"https://search.bilibili.com/all?keyword=%E5%8B%87%E5%93%A5%E9%A4%90%E9%A5%AE"}}]
+
+User: "打开火狐浏览器"
+Output: [{"skill":"open_app","args":{"name":"Firefox"}}]
 
 User: "帮我整理成列表"
 Output: [{"skill":"format_list","args":{}}]
