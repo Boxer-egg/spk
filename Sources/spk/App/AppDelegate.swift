@@ -47,7 +47,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         setupEditMenu() // Enable Copy/Paste
         keyboardManager.delegate = self
         speechManager.delegate = self
-        
+
+        // Register skills
+        SkillRegistry.shared.register(DefaultPasteSkill())
+        SkillRegistry.shared.register(FormatListSkill())
+        SkillRegistry.shared.register(TranslateSkill())
+        SkillRegistry.shared.register(OpenBrowserSkill())
+        SkillRegistry.shared.register(OpenFinderSkill())
+        SkillRegistry.shared.register(TypeTextSkill())
+        SkillRegistry.shared.register(PressKeySkill())
+
+        // Ensure user prompts directory exists and copy defaults if needed
+        PromptManager.shared.ensureUserPromptsDirectory()
+        PromptManager.shared.copyBundledPromptToUserDirectory(path: "planner.prompt")
+        PromptManager.shared.copyBundledPromptToUserDirectory(path: "skills/default_paste.prompt")
+        PromptManager.shared.copyBundledPromptToUserDirectory(path: "skills/format_list.prompt")
+        PromptManager.shared.copyBundledPromptToUserDirectory(path: "skills/translate.prompt")
+
         checkPermissions()
 
         let referenced = HistoryManager.shared.getEntries().compactMap { $0.audioFilename }
@@ -304,40 +320,57 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     
     func speechManager(_ manager: SpeechManager, didFinishWithText text: String) {
         hudShowWorkItem = nil
-        
+
         // If HUD was never visible (anti-misclick), don't process results
         guard isHudVisible else {
             isHudVisible = false
             return
         }
-        
+
         let wordCount = text.count
         statisticsTodayCount += 1
         statisticsTotalWords += wordCount
 
-        if SettingsManager.shared.isLLMEnabled {
-            HUDViewModel.shared.state = .refining
-            HUDViewModel.shared.text = text // Show original text while refining
-            updateMenuBarIcon(badgeColor: .systemBlue)
+        HUDViewModel.shared.state = .refining
+        HUDViewModel.shared.text = text
+        updateMenuBarIcon(badgeColor: .systemBlue)
 
-            LLMManager.shared.refineText(systemPrompt: "", userText: text) { result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let refined):
-                        HUDViewModel.shared.text = refined
-                        HUDViewModel.shared.state = .success
-                        ClipboardManager.shared.pasteText(refined, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
-                        HistoryManager.shared.addEntry(originalText: text, refinedText: refined, audioFilename: self.currentAudioFilename)
-                    case .failure(let error):
-                        print("LLM Error: \(error)")
-                        HUDViewModel.shared.state = .error
-                        ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
-                        HistoryManager.shared.addEntry(originalText: text, refinedText: nil, audioFilename: self.currentAudioFilename)
+        SkillPlanner.shared.plan(for: text) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let calls):
+                    SkillExecutor.shared.execute(calls: calls, originalText: text) { execResult in
+                        DispatchQueue.main.async {
+                            switch execResult {
+                            case .success(let finalText):
+                                HUDViewModel.shared.text = finalText
+                                HUDViewModel.shared.state = .success
+                                if finalText != text {
+                                    ClipboardManager.shared.pasteText(finalText, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
+                                }
+                                HistoryManager.shared.addEntry(originalText: text, refinedText: finalText != text ? finalText : nil, audioFilename: self.currentAudioFilename)
+                            case .failure(let error):
+                                print("Skill execution error: \(error)")
+                                HUDViewModel.shared.state = .error
+                                ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
+                                HistoryManager.shared.addEntry(originalText: text, refinedText: nil, audioFilename: self.currentAudioFilename)
+                            }
+                            self.currentAudioFilename = nil
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                HUDViewModel.shared.isVisible = false
+                                self.updateMenuBarIcon(badgeColor: nil)
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    HUDPanel.shared.hide()
+                                }
+                            }
+                        }
                     }
-
+                case .failure(let error):
+                    print("Planner error: \(error)")
+                    HUDViewModel.shared.state = .error
+                    ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
+                    HistoryManager.shared.addEntry(originalText: text, refinedText: nil, audioFilename: self.currentAudioFilename)
                     self.currentAudioFilename = nil
-
-                    // Delay hiding to let user see the final result
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         HUDViewModel.shared.isVisible = false
                         self.updateMenuBarIcon(badgeColor: nil)
@@ -347,16 +380,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                     }
                 }
             }
-        } else {
-            HUDViewModel.shared.state = .success
-            updateMenuBarIcon(badgeColor: nil)
-            ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
-            HistoryManager.shared.addEntry(originalText: text, refinedText: nil, audioFilename: self.currentAudioFilename)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                HUDViewModel.shared.isVisible = false
-                HUDPanel.shared.hide()
-            }
-            self.currentAudioFilename = nil
         }
     }
     
