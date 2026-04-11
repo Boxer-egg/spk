@@ -19,7 +19,18 @@ let package = Package(
                 .product(name: "Yams", package: "Yams")
             ],
             path: "Sources/spk",
-            exclude: ["Resources"]
+            exclude: ["Resources"],
+            resources: [
+                .process("Resources")
+            ]
+        ),
+        .testTarget(
+            name: "spkTests",
+            dependencies: ["Spk"],
+            path: "Tests/spkTests",
+            resources: [
+                .copy("TestResources")
+            ]
         )
     ]
 )
