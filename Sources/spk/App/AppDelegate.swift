@@ -2,6 +2,7 @@ import Cocoa
 import SwiftUI
 import Speech
 import AVFoundation
+import Combine
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, SpeechManagerDelegate, NSMenuDelegate {
@@ -24,6 +25,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     var statsTodayItem: NSMenuItem?
     var statsWordsItem: NSMenuItem?
     var inputDeviceMenuItem: NSMenuItem?
+    private var cancellables = Set<AnyCancellable>()
 
     private var statisticsTodayKey: String {
         let formatter = DateFormatter()
@@ -80,6 +82,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
 
         // Initial language
         speechManager.setLanguage(SettingsManager.shared.selectedLanguage)
+
+        // Subscribe to settings changes so menu bar stays in sync with the settings window
+        SettingsManager.shared.$isLLMEnabled
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateMenuStates()
+            }
+            .store(in: &cancellables)
     }
     
     private func checkPermissions() {
@@ -139,7 +149,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
 
         // History
         let historyMenu = NSMenu()
-        let historyMenuItem = NSMenuItem(title: localized("menu.history"), action: nil, keyEquivalent: "")
+        let historyMenuItem = NSMenuItem(title: String(format: localized("menu.history"), 0), action: nil, keyEquivalent: "")
         historyMenuItem.submenu = historyMenu
         menu.addItem(historyMenuItem)
         self.historyMenuItem = historyMenuItem
@@ -453,10 +463,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     }
 
     private func updateHistoryMenu() {
+        let entries = HistoryManager.shared.getEntries()
+        historyMenuItem?.title = String(format: localized("menu.history"), entries.count)
         guard let historyMenu = historyMenuItem?.submenu else { return }
         historyMenu.removeAllItems()
 
-        let entries = HistoryManager.shared.getEntries()
         if entries.isEmpty {
             let item = NSMenuItem(title: localized("menu.history.empty"), action: nil, keyEquivalent: "")
             item.isEnabled = false

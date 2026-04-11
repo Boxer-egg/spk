@@ -7,7 +7,7 @@
 
 /* GeneralSettingsView */
 "general.title" = "一般";
-"general.llm.title" = "LLM 修正を有効化";
+"general.llm.title" = "AI Optimize";
 "general.llm.subtitle" = "貼り付ける前に AI で音声を最適化";
 "general.clipboard.title" = "クリップボードにコピー";
 "general.clipboard.subtitle" = "最終出力を自動保存";
@@ -48,8 +48,8 @@
 "common.changesSaved" = "変更は自動的に保存されます";
 
 /* AppDelegate Menu */
-"menu.language" = "言語";
-"menu.history" = "履歴";
+"menu.language" = "Recognition Language";
+"menu.history" = "History (%d)";
 "menu.history.empty" = "履歴なし";
 "menu.history.more" = "さらに %d 件";
 "menu.history.clear" = "履歴をクリア...";

@@ -16,7 +16,7 @@ package:
 	mkdir -p $(MACOS)
 	mkdir -p $(RESOURCES)
 	cp $(BUILD_DIR)/$(APP_NAME) $(MACOS)/
-	cp Sources/spk/Resources/Info.plist $(CONTENTS)/
+	cp Sources/spk/Info.plist $(CONTENTS)/
 	cp Sources/spk/Resources/AppIcon.icns $(RESOURCES)/
 	cp -R Sources/spk/Resources/*.lproj $(RESOURCES)/
 

@@ -7,7 +7,7 @@
 
 /* GeneralSettingsView */
 "general.title" = "通用";
-"general.llm.title" = "启用 LLM 纠错";
+"general.llm.title" = "让 AI 优化";
 "general.llm.subtitle" = "在粘贴前使用 AI 优化语音内容";
 "general.clipboard.title" = "复制到剪贴板";
 "general.clipboard.subtitle" = "自动保存最终结果";
@@ -51,8 +51,8 @@
 "common.changesSaved" = "更改会自动保存";
 
 /* AppDelegate Menu */
-"menu.language" = "语言";
-"menu.history" = "历史记录";
+"menu.language" = "识别语言";
+"menu.history" = "历史记录（%d）";
 "menu.history.empty" = "无历史记录";
 "menu.history.more" = "还有 %d 条记录";
 "menu.history.clear" = "清除历史记录...";

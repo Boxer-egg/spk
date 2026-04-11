@@ -7,7 +7,7 @@
 
 /* GeneralSettingsView */
 "general.title" = "Général";
-"general.llm.title" = "Activer la correction LLM";
+"general.llm.title" = "AI Optimize";
 "general.llm.subtitle" = "Affiner la parole avec l'IA avant de coller";
 "general.clipboard.title" = "Copier dans le presse-papiers";
 "general.clipboard.subtitle" = "Enregistrer le résultat final automatiquement";
@@ -48,8 +48,8 @@
 "common.changesSaved" = "Les modifications sont enregistrées automatiquement";
 
 /* AppDelegate Menu */
-"menu.language" = "Langue";
-"menu.history" = "Historique";
+"menu.language" = "Recognition Language";
+"menu.history" = "History (%d)";
 "menu.history.empty" = "Aucun historique";
 "menu.history.more" = "%d entrées supplémentaires";
 "menu.history.clear" = "Effacer l'historique...";

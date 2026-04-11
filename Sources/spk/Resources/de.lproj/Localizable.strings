@@ -7,7 +7,7 @@
 
 /* GeneralSettingsView */
 "general.title" = "Allgemein";
-"general.llm.title" = "LLM-Korrektur aktivieren";
+"general.llm.title" = "AI Optimize";
 "general.llm.subtitle" = "Sprache vor dem Einfügen mit KI optimieren";
 "general.clipboard.title" = "In Zwischenablage kopieren";
 "general.clipboard.subtitle" = "Endergebnis automatisch speichern";
@@ -48,8 +48,8 @@
 "common.changesSaved" = "Änderungen werden automatisch gespeichert";
 
 /* AppDelegate Menu */
-"menu.language" = "Sprache";
-"menu.history" = "Verlauf";
+"menu.language" = "Recognition Language";
+"menu.history" = "History (%d)";
 "menu.history.empty" = "Kein Verlauf";
 "menu.history.more" = "%d weitere Einträge";
 "menu.history.clear" = "Verlauf löschen...";

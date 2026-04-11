@@ -7,7 +7,7 @@
 
 /* GeneralSettingsView */
 "general.title" = "General";
-"general.llm.title" = "Enable LLM Correction";
+"general.llm.title" = "AI Optimize";
 "general.llm.subtitle" = "Refine speech with AI before pasting";
 "general.clipboard.title" = "Copy to Clipboard";
 "general.clipboard.subtitle" = "Save final output automatically";
@@ -50,8 +50,8 @@
 "common.changesSaved" = "Changes are saved automatically";
 
 /* AppDelegate Menu */
-"menu.language" = "Language";
-"menu.history" = "History";
+"menu.language" = "Recognition Language";
+"menu.history" = "History (%d)";
 "menu.history.empty" = "No history";
 "menu.history.more" = "%d more entries";
 "menu.history.clear" = "Clear History...";

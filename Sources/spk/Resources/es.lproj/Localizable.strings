@@ -7,7 +7,7 @@
 
 /* GeneralSettingsView */
 "general.title" = "General";
-"general.llm.title" = "Activar corrección con LLM";
+"general.llm.title" = "AI Optimize";
 "general.llm.subtitle" = "Refina el habla con IA antes de pegar";
 "general.clipboard.title" = "Copiar al portapapeles";
 "general.clipboard.subtitle" = "Guardar el resultado automáticamente";
@@ -48,8 +48,8 @@
 "common.changesSaved" = "Los cambios se guardan automáticamente";
 
 /* AppDelegate Menu */
-"menu.language" = "Idioma";
-"menu.history" = "Historial";
+"menu.language" = "Recognition Language";
+"menu.history" = "History (%d)";
 "menu.history.empty" = "Sin historial";
 "menu.history.more" = "%d entradas más";
 "menu.history.clear" = "Borrar historial...";

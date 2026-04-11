@@ -115,35 +115,6 @@ class SettingsManager: ObservableObject {
         // 加载配置
         self.config = Self.loadConfig(from: configURL)
 
-        // 迁移旧的 UserDefaults 配置（如果存在且 YAML 配置为空）
-        let defaults = UserDefaults.standard
-        let keysToMigrate = [
-            "isLLMEnabled",
-            "selectedLanguage",
-            "apiBaseURL",
-            "apiKey",
-            "model",
-            "isHoldToSpeak",
-            "triggerKey",
-            "isCopyToClipboardEnabled",
-            "isHistoryEnabled",
-            "isHistoryAudioEnabled",
-            "selectedInputDeviceUID",
-            "isAntiMisclickEnabled",
-            "antiMisclickDelay"
-        ]
-        var migrated = false
-        for key in keysToMigrate {
-            if defaults.object(forKey: key) != nil && config[key] == nil {
-                config[key] = defaults.object(forKey: key)
-                migrated = true
-            }
-        }
-        if migrated {
-            // 注意：此时不能调用 saveConfig()，因为属性尚未初始化
-            // 将在属性初始化后保存
-        }
-
         // 设置默认值（如果配置中不存在）
         self.isLLMEnabled = (config["isLLMEnabled"] as? Bool) ?? false
         self.isCopyToClipboardEnabled = (config["isCopyToClipboardEnabled"] as? Bool) ?? false
