@@ -20,6 +20,7 @@ let package = Package(
                 .product(name: "Yams", package: "Yams")
             ],
             path: "Sources/spk",
+            exclude: ["Info.plist"],
             resources: [
                 .process("Resources")
             ]
