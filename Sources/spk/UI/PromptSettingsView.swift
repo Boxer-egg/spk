@@ -56,23 +56,10 @@ struct PromptSettingsView: View {
     }
 
     private func loadPrompt() {
-        if FileManager.default.fileExists(atPath: promptURL.path) {
-            do {
-                let content = try String(contentsOf: promptURL, encoding: .utf8)
-                promptText = content
-                return
-            } catch {
-                print("Failed to load prompt from \(promptURL.path): \(error)")
-            }
-        }
-        // Fallback to bundled default
-        if let bundledURL = Bundle.main.url(forResource: "skills/default_paste", withExtension: "prompt", subdirectory: "Prompts") {
-            do {
-                let content = try String(contentsOf: bundledURL, encoding: .utf8)
-                promptText = content
-            } catch {
-                print("Failed to load bundled prompt: \(error)")
-            }
+        if let content = PromptManager.shared.loadPrompt(for: "skills/default_paste.prompt") {
+            promptText = content
+        } else {
+            print("Failed to load default_paste prompt from user directory or bundle")
         }
     }
 
