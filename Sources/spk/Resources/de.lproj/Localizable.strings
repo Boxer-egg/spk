@@ -57,7 +57,7 @@
 "menu.history.clear.message" = "Möchtest du wirklich den gesamten Verlauf löschen? Diese Aktion kann nicht rückgängig gemacht werden.";
 "menu.history.clear.confirm" = "Löschen";
 "menu.history.clear.cancel" = "Abbrechen";
-"menu.llm" = "LLM-Korrektur";
+"menu.llm" = "AI Optimize";
 "menu.settings" = "Einstellungen...";
 "menu.quit" = "Beenden";
 "menu.statistics.today" = "Heute: %d";

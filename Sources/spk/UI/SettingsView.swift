@@ -1,14 +1,12 @@
 import SwiftUI
 
 enum SettingsTab: String, CaseIterable {
-    case general, api, prompt, shortcuts
+    case general, api
 
     var title: String {
         switch self {
         case .general: return localized("settings.tab.general")
         case .api: return localized("settings.tab.api")
-        case .prompt: return localized("settings.tab.prompt")
-        case .shortcuts: return localized("settings.tab.shortcuts")
         }
     }
 
@@ -16,8 +14,6 @@ enum SettingsTab: String, CaseIterable {
         switch self {
         case .general: return "gearshape.fill"
         case .api: return "network"
-        case .prompt: return "text.bubble.fill"
-        case .shortcuts: return "keyboard.fill"
         }
     }
 }
@@ -77,10 +73,6 @@ struct SettingsView: View {
                     GeneralSettingsView()
                 case .api:
                     APISettingsView()
-                case .prompt:
-                    PromptSettingsView()
-                case .shortcuts:
-                    ShortcutSettingsView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

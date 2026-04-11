@@ -57,7 +57,7 @@
 "menu.history.clear.message" = "Voulez-vous vraiment effacer tout l'historique ? Cette action est irréversible.";
 "menu.history.clear.confirm" = "Effacer";
 "menu.history.clear.cancel" = "Annuler";
-"menu.llm" = "Correction LLM";
+"menu.llm" = "AI Optimize";
 "menu.settings" = "Réglages...";
 "menu.quit" = "Quitter";
 "menu.statistics.today" = "Aujourd'hui : %d";

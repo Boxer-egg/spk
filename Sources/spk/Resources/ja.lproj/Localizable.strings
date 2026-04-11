@@ -57,7 +57,7 @@
 "menu.history.clear.message" = "すべての履歴をクリアしてもよろしいですか？この操作は元に戻せません。";
 "menu.history.clear.confirm" = "クリア";
 "menu.history.clear.cancel" = "キャンセル";
-"menu.llm" = "LLM 修正";
+"menu.llm" = "AI Optimize";
 "menu.settings" = "設定...";
 "menu.quit" = "終了";
 "menu.statistics.today" = "今日：%d";

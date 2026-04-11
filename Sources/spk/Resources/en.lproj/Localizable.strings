@@ -59,7 +59,7 @@
 "menu.history.clear.message" = "Are you sure you want to clear all history? This action cannot be undone.";
 "menu.history.clear.confirm" = "Clear";
 "menu.history.clear.cancel" = "Cancel";
-"menu.llm" = "LLM Correction";
+"menu.llm" = "AI Optimize";
 "menu.settings" = "Settings...";
 "menu.quit" = "Quit";
 "menu.statistics.today" = "Today: %d";

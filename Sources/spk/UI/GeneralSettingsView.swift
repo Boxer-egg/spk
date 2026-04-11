@@ -65,6 +65,62 @@ struct GeneralSettingsView: View {
                     }
                 }
 
+                Text(localized("shortcuts.title"))
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .padding(.top, 8)
+
+                card {
+                    VStack(spacing: 0) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(localized("shortcuts.holdToSpeak"))
+                                    .font(.system(size: 13, weight: .medium))
+                                Text(settings.isHoldToSpeak ? localized("shortcuts.hold.subtitle") : localized("shortcuts.toggle.subtitle"))
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Toggle("", isOn: $settings.isHoldToSpeak)
+                                .toggleStyle(.switch)
+                                .labelsHidden()
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+
+                        Divider().padding(.leading, 12)
+
+                        HStack {
+                            Text(localized("shortcuts.triggerKey"))
+                                .font(.system(size: 13, weight: .medium))
+                            Spacer()
+                            Picker("", selection: $settings.triggerKey) {
+                                ForEach(["Fn", "Left Ctrl", "Left Option", "Right Option"], id: \.self) { key in
+                                    Text(key).tag(key)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            .frame(width: 140)
+                            .labelsHidden()
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(localized("shortcuts.hints"))
+                        .font(.headline)
+                    if settings.isHoldToSpeak {
+                        Text(localized("shortcuts.hint.hold"))
+                    } else {
+                        Text(localized("shortcuts.hint.toggle"))
+                    }
+                }
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 4)
+
                 HStack {
                     Spacer()
                     Text(localized("common.changesSaved"))

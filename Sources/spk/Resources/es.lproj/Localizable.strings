@@ -57,7 +57,7 @@
 "menu.history.clear.message" = "¿Estás seguro de que quieres borrar todo el historial? Esta acción no se puede deshacer.";
 "menu.history.clear.confirm" = "Borrar";
 "menu.history.clear.cancel" = "Cancelar";
-"menu.llm" = "Corrección con LLM";
+"menu.llm" = "AI Optimize";
 "menu.settings" = "Configuración...";
 "menu.quit" = "Salir";
 "menu.statistics.today" = "Hoy: %d";

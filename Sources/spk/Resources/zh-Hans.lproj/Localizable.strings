@@ -60,7 +60,7 @@
 "menu.history.clear.message" = "确定要清除所有历史记录吗？此操作无法撤销。";
 "menu.history.clear.confirm" = "清除";
 "menu.history.clear.cancel" = "取消";
-"menu.llm" = "LLM 纠错";
+"menu.llm" = "让 AI 优化";
 "menu.settings" = "设置...";
 "menu.quit" = "退出";
 "menu.statistics.today" = "今日使用次数：%d";
