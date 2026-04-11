@@ -32,11 +32,10 @@ class SkillExecutor {
             return
         }
 
-        var mutableContext = context
-        skill.execute(context: &mutableContext, args: call.args) { result in
+        skill.execute(context: context, args: call.args) { result in
             switch result {
             case .success:
-                self.runStep(index: index + 1, calls: calls, context: mutableContext, completion: completion)
+                self.runStep(index: index + 1, calls: calls, context: context, completion: completion)
             case .failure(let error):
                 completion(.failure(error))
             }

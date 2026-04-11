@@ -2,7 +2,7 @@ import Foundation
 
 protocol Skill: AnyObject {
     var metadata: SkillMetadata { get }
-    func execute(context: inout SkillContext, args: [String: String], completion: @escaping (Result<Void, Error>) -> Void)
+    func execute(context: SkillContext, args: [String: String], completion: @escaping (Result<Void, Error>) -> Void)
 }
 
 struct SkillMetadata {
@@ -19,9 +19,14 @@ struct SkillParameter {
     let required: Bool
 }
 
-struct SkillContext {
+final class SkillContext {
     var originalText: String
     var text: String
+
+    init(originalText: String, text: String) {
+        self.originalText = originalText
+        self.text = text
+    }
 }
 
 struct SkillCall: Decodable {
