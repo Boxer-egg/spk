@@ -3,7 +3,10 @@ import Foundation
 class SkillExecutor {
     static let shared = SkillExecutor()
 
-    func execute(calls: [SkillCall], originalText: String, completion: @escaping (Result<String, Error>) -> Void) {
+    func execute(
+        calls: [SkillCall], originalText: String,
+        completion: @escaping (Result<String, Error>) -> Void
+    ) {
         let context = SkillContext(originalText: originalText, text: originalText)
 
         // If no calls, fallback to default_paste behavior
@@ -19,15 +22,21 @@ class SkillExecutor {
         }
     }
 
-    private func runStep(index: Int, calls: [SkillCall], context: SkillContext, completion: @escaping (Result<SkillContext, Error>) -> Void) {
+    private func runStep(
+        index: Int, calls: [SkillCall], context: SkillContext,
+        completion: @escaping (Result<SkillContext, Error>) -> Void
+    ) {
         guard index < calls.count else {
             completion(.success(context))
             return
         }
 
         let call = calls[index]
+        print(
+            "[Executor] Step \(index + 1)/\(calls.count): Executing \"\(call.skill)\" with args: \(call.args)"
+        )
         guard let skill = SkillRegistry.shared.skill(for: call.skill) else {
-            print("Skill not found: \(call.skill)")
+            print("[Executor] WARNING: Skill not found: \(call.skill)")
             runStep(index: index + 1, calls: calls, context: context, completion: completion)
             return
         }
@@ -35,7 +44,8 @@ class SkillExecutor {
         skill.execute(context: context, args: call.args) { result in
             switch result {
             case .success:
-                self.runStep(index: index + 1, calls: calls, context: context, completion: completion)
+                self.runStep(
+                    index: index + 1, calls: calls, context: context, completion: completion)
             case .failure(let error):
                 completion(.failure(error))
             }

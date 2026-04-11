@@ -1,5 +1,5 @@
-import Foundation
 import Cocoa
+import Foundation
 
 final class OpenAppSkill: Skill {
     private static let commonAppMap: [String: String] = [
@@ -38,21 +38,28 @@ final class OpenAppSkill: Skill {
         "facetime": "FaceTime",
         "地图": "Maps",
         "计算器": "Calculator",
-        "预览": "Preview"
+        "预览": "Preview",
     ]
 
     var metadata: SkillMetadata {
         SkillMetadata(
             identifier: "open_app",
             name: "Open App",
-            description: "Open a local macOS application by name. Use this when the user says '打开微信' or 'open Firefox'. Do not use this for web searches or generic URLs.",
+            description:
+                "Open a local macOS application by name. Use this when the user says '打开微信' or 'open Firefox'. Do not use this for web searches or generic URLs.",
             parameters: [
-                SkillParameter(name: "name", type: "string", description: "The human-readable app name (e.g., 'WeChat', 'Firefox').", required: true)
+                SkillParameter(
+                    name: "name", type: "string",
+                    description: "The human-readable app name (e.g., 'WeChat', 'Firefox').",
+                    required: true)
             ]
         )
     }
 
-    func execute(context: SkillContext, args: [String: String], completion: @escaping (Result<Void, Error>) -> Void) {
+    func execute(
+        context: SkillContext, args: [String: String],
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
         guard let name = args["name"] else {
             completion(.success(()))
             return
@@ -69,14 +76,18 @@ final class OpenAppSkill: Skill {
         }
 
         if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: appName) {
-            NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration()) { _, _ in }
+            NSWorkspace.shared.openApplication(
+                at: url, configuration: NSWorkspace.OpenConfiguration()
+            ) { _, _ in }
             completion(.success(()))
             return
         }
 
         if let path = NSWorkspace.shared.fullPath(forApplication: appName) {
             let url = URL(fileURLWithPath: path)
-            NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration()) { _, _ in }
+            NSWorkspace.shared.openApplication(
+                at: url, configuration: NSWorkspace.OpenConfiguration()
+            ) { _, _ in }
             completion(.success(()))
             return
         }
@@ -84,19 +95,27 @@ final class OpenAppSkill: Skill {
         // Fallback: use local Spotlight (mdfind) to resolve Chinese/display names like 滴答清单 -> TickTick
         Self.findAppViaSpotlight(named: appName) { url in
             if let url = url {
-                NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration()) { _, _ in }
+                NSWorkspace.shared.openApplication(
+                    at: url, configuration: NSWorkspace.OpenConfiguration()
+                ) { _, _ in }
             }
             completion(.success(()))
         }
     }
 
-    private static func findAppViaSpotlight(named query: String, completion: @escaping (URL?) -> Void) {
-        let directories = ["/Applications", FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Applications").path]
+    private static func findAppViaSpotlight(
+        named query: String, completion: @escaping (URL?) -> Void
+    ) {
+        let directories = [
+            "/Applications",
+            FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Applications")
+                .path,
+        ]
 
         // Try display name first, then filename. Avoid complex compound predicates which can match everything.
         let predicates = [
             "kMDItemDisplayName == '*\(query)*'cd",
-            "kMDItemFSName == '*\(query)*'cd"
+            "kMDItemFSName == '*\(query)*'cd",
         ]
 
         func runQuery(index: Int) {
@@ -117,9 +136,11 @@ final class OpenAppSkill: Skill {
             task.terminationHandler = { _ in
                 let data = pipe.fileHandleForReading.readDataToEndOfFile()
                 DispatchQueue.main.async {
-                    if let output = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines),
-                       let firstPath = output.components(separatedBy: "\n").first,
-                       !firstPath.isEmpty {
+                    if let output = String(data: data, encoding: .utf8)?.trimmingCharacters(
+                        in: .whitespacesAndNewlines),
+                        let firstPath = output.components(separatedBy: "\n").first,
+                        !firstPath.isEmpty
+                    {
                         completion(URL(fileURLWithPath: firstPath))
                     } else {
                         runQuery(index: index + 1)
