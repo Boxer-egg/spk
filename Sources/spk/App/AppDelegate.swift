@@ -320,7 +320,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             HUDViewModel.shared.text = text // Show original text while refining
             updateMenuBarIcon(badgeColor: .systemBlue)
 
-            LLMManager.shared.refineText(text) { result in
+            LLMManager.shared.refineText(systemPrompt: "", userText: text) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let refined):
