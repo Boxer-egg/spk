@@ -61,7 +61,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         let oldPromptURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/spk/system_prompt.txt")
         let defaultPastePromptURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/spk/prompts/skills/default_paste.prompt")
         if FileManager.default.fileExists(atPath: oldPromptURL.path) && !FileManager.default.fileExists(atPath: defaultPastePromptURL.path) {
-            PromptManager.shared.ensureUserPromptsDirectory()
             try? FileManager.default.createDirectory(at: defaultPastePromptURL.deletingLastPathComponent(), withIntermediateDirectories: true)
             try? FileManager.default.copyItem(at: oldPromptURL, to: defaultPastePromptURL)
         }

@@ -2,8 +2,9 @@ import SwiftUI
 
 struct PromptSettingsView: View {
     @State private var promptText: String = ""
-    private let promptURL = FileManager.default.homeDirectoryForCurrentUser
-        .appendingPathComponent(".config/spk/prompts/skills/default_paste.prompt", isDirectory: false)
+    private var promptURL: URL {
+        URL(fileURLWithPath: NSString(string: SettingsManager.shared.defaultPastePromptPath).expandingTildeInPath)
+    }
 
     var body: some View {
         ScrollView {
@@ -56,20 +57,31 @@ struct PromptSettingsView: View {
 
     private func loadPrompt() {
         if FileManager.default.fileExists(atPath: promptURL.path) {
-            if let content = try? String(contentsOf: promptURL, encoding: .utf8) {
+            do {
+                let content = try String(contentsOf: promptURL, encoding: .utf8)
                 promptText = content
                 return
+            } catch {
+                print("Failed to load prompt from \(promptURL.path): \(error)")
             }
         }
         // Fallback to bundled default
-        if let bundledURL = Bundle.main.url(forResource: "skills/default_paste", withExtension: "prompt", subdirectory: "Prompts"),
-           let content = try? String(contentsOf: bundledURL, encoding: .utf8) {
-            promptText = content
+        if let bundledURL = Bundle.main.url(forResource: "skills/default_paste", withExtension: "prompt", subdirectory: "Prompts") {
+            do {
+                let content = try String(contentsOf: bundledURL, encoding: .utf8)
+                promptText = content
+            } catch {
+                print("Failed to load bundled prompt: \(error)")
+            }
         }
     }
 
     private func savePrompt() {
-        try? promptText.write(to: promptURL, atomically: true, encoding: .utf8)
+        do {
+            try promptText.write(to: promptURL, atomically: true, encoding: .utf8)
+        } catch {
+            print("Failed to save prompt to \(promptURL.path): \(error)")
+        }
     }
 
     @ViewBuilder
