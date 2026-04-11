@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct PromptSettingsView: View {
-    @ObservedObject var settings = SettingsManager.shared
+    @State private var promptText: String = ""
+    private let promptURL = FileManager.default.homeDirectoryForCurrentUser
+        .appendingPathComponent(".config/spk/prompts/skills/default_paste.prompt", isDirectory: false)
 
     var body: some View {
         ScrollView {
@@ -12,13 +14,13 @@ struct PromptSettingsView: View {
 
                 card {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(NSLocalizedString("prompt.system", comment: ""))
+                        Text("Default Paste Prompt")
                             .font(.system(size: 13, weight: .medium))
-                        Text(NSLocalizedString("prompt.subtitle", comment: ""))
+                        Text("This prompt is used when no specific skill matches your voice input.")
                             .font(.caption)
                             .foregroundColor(.secondary)
 
-                        TextEditor(text: $settings.systemPrompt)
+                        TextEditor(text: $promptText)
                             .frame(minHeight: 200)
                             .font(.system(size: 12, design: .monospaced))
                             .padding(6)
@@ -27,6 +29,9 @@ struct PromptSettingsView: View {
                                     .stroke(Color.secondary.opacity(0.25), lineWidth: 1)
                             )
                             .background(Color(nsColor: .textBackgroundColor).cornerRadius(6))
+                            .onChange(of: promptText) {
+                                savePrompt()
+                            }
                     }
                     .padding(14)
                 }
@@ -44,6 +49,27 @@ struct PromptSettingsView: View {
             }
             .padding(20)
         }
+        .onAppear {
+            loadPrompt()
+        }
+    }
+
+    private func loadPrompt() {
+        if FileManager.default.fileExists(atPath: promptURL.path) {
+            if let content = try? String(contentsOf: promptURL, encoding: .utf8) {
+                promptText = content
+                return
+            }
+        }
+        // Fallback to bundled default
+        if let bundledURL = Bundle.main.url(forResource: "skills/default_paste", withExtension: "prompt", subdirectory: "Prompts"),
+           let content = try? String(contentsOf: bundledURL, encoding: .utf8) {
+            promptText = content
+        }
+    }
+
+    private func savePrompt() {
+        try? promptText.write(to: promptURL, atomically: true, encoding: .utf8)
     }
 
     @ViewBuilder

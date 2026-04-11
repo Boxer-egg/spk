@@ -57,6 +57,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         SkillRegistry.shared.register(TypeTextSkill())
         SkillRegistry.shared.register(PressKeySkill())
 
+        // Migrate old system_prompt.txt to default_paste.prompt if needed
+        let oldPromptURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/spk/system_prompt.txt")
+        let defaultPastePromptURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/spk/prompts/skills/default_paste.prompt")
+        if FileManager.default.fileExists(atPath: oldPromptURL.path) && !FileManager.default.fileExists(atPath: defaultPastePromptURL.path) {
+            PromptManager.shared.ensureUserPromptsDirectory()
+            try? FileManager.default.createDirectory(at: defaultPastePromptURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try? FileManager.default.copyItem(at: oldPromptURL, to: defaultPastePromptURL)
+        }
+
         // Ensure user prompts directory exists and copy defaults if needed
         PromptManager.shared.ensureUserPromptsDirectory()
         PromptManager.shared.copyBundledPromptToUserDirectory(path: "planner.prompt")
