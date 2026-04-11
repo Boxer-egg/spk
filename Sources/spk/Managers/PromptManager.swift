@@ -22,11 +22,20 @@ class PromptManager {
 
     func loadPrompt(for path: String) -> String? {
         guard let url = promptURL(for: path) else { return nil }
-        return try? String(contentsOf: url, encoding: .utf8)
+        do {
+            return try String(contentsOf: url, encoding: .utf8)
+        } catch {
+            print("Error: failed to load prompt at \(url.path): \(error)")
+            return nil
+        }
     }
 
     func ensureUserPromptsDirectory() {
-        try? FileManager.default.createDirectory(at: userPromptsDir, withIntermediateDirectories: true)
+        do {
+            try FileManager.default.createDirectory(at: userPromptsDir, withIntermediateDirectories: true)
+        } catch {
+            print("Error: failed to create prompts directory at \(userPromptsDir.path): \(error)")
+        }
     }
 
     func copyBundledPromptToUserDirectory(path: String) {
@@ -35,7 +44,11 @@ class PromptManager {
         let dir = userURL.deletingLastPathComponent()
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         if !FileManager.default.fileExists(atPath: userURL.path) {
-            try? FileManager.default.copyItem(at: bundledURL, to: userURL)
+            do {
+                try FileManager.default.copyItem(at: bundledURL, to: userURL)
+            } catch {
+                print("Error: failed to copy bundled prompt to \(userURL.path): \(error)")
+            }
         }
     }
 }

@@ -19,10 +19,11 @@ final class PromptManagerTests: XCTestCase {
         super.tearDown()
     }
 
-    func testFallsBackToBundle() {
+    func testFallsBackToBundle() throws {
         let url = manager.promptURL(for: "planner.prompt")
         XCTAssertNotNil(url)
-        XCTAssertTrue(url!.absoluteString.contains("Prompts"))
+        let content = try String(contentsOf: url!, encoding: .utf8)
+        XCTAssertEqual(content, "Planner test prompt")
     }
 
     func testPrefersUserDirectory() throws {
@@ -37,6 +38,12 @@ final class PromptManagerTests: XCTestCase {
     func testCopyBundledPrompt() {
         manager.copyBundledPromptToUserDirectory(path: "planner.prompt")
         let userPath = tempDir.appendingPathComponent("planner.prompt")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: userPath.path))
+    }
+
+    func testCopyBundledPromptNestedPath() {
+        manager.copyBundledPromptToUserDirectory(path: "skills/default_paste.prompt")
+        let userPath = tempDir.appendingPathComponent("skills/default_paste.prompt")
         XCTAssertTrue(FileManager.default.fileExists(atPath: userPath.path))
     }
 }
