@@ -8,7 +8,7 @@ struct ShortcutSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text(NSLocalizedString("shortcuts.title", comment: ""))
+                Text(localized("shortcuts.title"))
                     .font(.title2)
                     .fontWeight(.semibold)
 
@@ -16,9 +16,9 @@ struct ShortcutSettingsView: View {
                     VStack(spacing: 0) {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
-                                Text(NSLocalizedString("shortcuts.holdToSpeak", comment: ""))
+                                Text(localized("shortcuts.holdToSpeak"))
                                     .font(.system(size: 13, weight: .medium))
-                                Text(settings.isHoldToSpeak ? NSLocalizedString("shortcuts.hold.subtitle", comment: "") : NSLocalizedString("shortcuts.toggle.subtitle", comment: ""))
+                                Text(settings.isHoldToSpeak ? localized("shortcuts.hold.subtitle") : localized("shortcuts.toggle.subtitle"))
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -33,7 +33,7 @@ struct ShortcutSettingsView: View {
                         Divider().padding(.leading, 12)
 
                         HStack {
-                            Text(NSLocalizedString("shortcuts.triggerKey", comment: ""))
+                            Text(localized("shortcuts.triggerKey"))
                                 .font(.system(size: 13, weight: .medium))
                             Spacer()
                             Picker("", selection: $settings.triggerKey) {
@@ -51,12 +51,12 @@ struct ShortcutSettingsView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(NSLocalizedString("shortcuts.hints", comment: ""))
+                    Text(localized("shortcuts.hints"))
                         .font(.headline)
                     if settings.isHoldToSpeak {
-                        Text(NSLocalizedString("shortcuts.hint.hold", comment: ""))
+                        Text(localized("shortcuts.hint.hold"))
                     } else {
-                        Text(NSLocalizedString("shortcuts.hint.toggle", comment: ""))
+                        Text(localized("shortcuts.hint.toggle"))
                     }
                 }
                 .font(.caption)
@@ -65,7 +65,7 @@ struct ShortcutSettingsView: View {
 
                 HStack {
                     Spacer()
-                    Text(NSLocalizedString("common.changesSaved", comment: ""))
+                    Text(localized("common.changesSaved"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Spacer()

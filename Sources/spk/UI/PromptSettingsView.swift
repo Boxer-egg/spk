@@ -9,7 +9,7 @@ struct PromptSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text(NSLocalizedString("prompt.title", comment: ""))
+                Text(localized("prompt.title"))
                     .font(.title2)
                     .fontWeight(.semibold)
 
@@ -39,7 +39,7 @@ struct PromptSettingsView: View {
 
                 HStack {
                     Spacer()
-                    Text(NSLocalizedString("common.changesSaved", comment: ""))
+                    Text(localized("common.changesSaved"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Spacer()

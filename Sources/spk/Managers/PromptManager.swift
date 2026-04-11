@@ -6,7 +6,7 @@ class PromptManager {
     private let userPromptsDir: URL
     private let bundle: Bundle
 
-    init(userPromptsDir: URL? = nil, bundle: Bundle = .main) {
+    init(userPromptsDir: URL? = nil, bundle: Bundle = .module) {
         self.userPromptsDir = userPromptsDir ?? FileManager.default.homeDirectoryForCurrentUser
             .appendingPathComponent(".config/spk/prompts", isDirectory: true)
         self.bundle = bundle
