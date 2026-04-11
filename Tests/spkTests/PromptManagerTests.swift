@@ -22,7 +22,7 @@ final class PromptManagerTests: XCTestCase {
     func testFallsBackToBundle() {
         let url = manager.promptURL(for: "planner.prompt")
         XCTAssertNotNil(url)
-        XCTAssertTrue(url!.absoluteString.contains("TestResources"))
+        XCTAssertTrue(url!.absoluteString.contains("Prompts"))
     }
 
     func testPrefersUserDirectory() throws {

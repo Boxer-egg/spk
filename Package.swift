@@ -30,7 +30,7 @@ let package = Package(
             dependencies: ["Spk"],
             path: "Tests/spkTests",
             resources: [
-                .copy("TestResources")
+                .copy("Prompts")
             ]
         )
     ]

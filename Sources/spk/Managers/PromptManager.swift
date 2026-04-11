@@ -17,13 +17,7 @@ class PromptManager {
         if FileManager.default.fileExists(atPath: userURL.path) {
             return userURL
         }
-        if let url = bundle.url(forResource: path, withExtension: nil, subdirectory: "Prompts") {
-            return url
-        }
-        if let url = bundle.url(forResource: path, withExtension: nil) {
-            return url
-        }
-        return bundle.url(forResource: path, withExtension: nil, subdirectory: "TestResources/Prompts")
+        return bundle.url(forResource: path, withExtension: nil, subdirectory: "Prompts")
     }
 
     func loadPrompt(for path: String) -> String? {
@@ -36,10 +30,7 @@ class PromptManager {
     }
 
     func copyBundledPromptToUserDirectory(path: String) {
-        let bundledURL: URL? = bundle.url(forResource: path, withExtension: nil, subdirectory: "Prompts")
-            ?? bundle.url(forResource: path, withExtension: nil)
-            ?? bundle.url(forResource: path, withExtension: nil, subdirectory: "TestResources/Prompts")
-        guard let bundledURL = bundledURL else { return }
+        guard let bundledURL = bundle.url(forResource: path, withExtension: nil, subdirectory: "Prompts") else { return }
         let userURL = userPromptsDir.appendingPathComponent(path)
         let dir = userURL.deletingLastPathComponent()
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
