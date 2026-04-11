@@ -8,7 +8,7 @@ private final class AppendSkill: Skill {
         self.metadata = metadata
         self.suffix = suffix
     }
-    func execute(context: inout SkillContext, args: [String: String], completion: @escaping (Result<Void, Error>) -> Void) {
+    func execute(context: SkillContext, args: [String: String], completion: @escaping (Result<Void, Error>) -> Void) {
         context.text += suffix
         completion(.success(()))
     }
@@ -19,7 +19,7 @@ private final class FailingSkill: Skill {
     init(metadata: SkillMetadata) {
         self.metadata = metadata
     }
-    func execute(context: inout SkillContext, args: [String: String], completion: @escaping (Result<Void, Error>) -> Void) {
+    func execute(context: SkillContext, args: [String: String], completion: @escaping (Result<Void, Error>) -> Void) {
         completion(.failure(NSError(domain: "Test", code: 1)))
     }
 }

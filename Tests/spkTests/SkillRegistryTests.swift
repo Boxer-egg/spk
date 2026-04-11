@@ -3,7 +3,7 @@ import XCTest
 
 private final class MockSkill: Skill {
     let metadata: SkillMetadata
-    func execute(context: inout SkillContext, args: [String: String], completion: @escaping (Result<Void, Error>) -> Void) {
+    func execute(context: SkillContext, args: [String: String], completion: @escaping (Result<Void, Error>) -> Void) {
         completion(.success(()))
     }
     init(metadata: SkillMetadata) {
