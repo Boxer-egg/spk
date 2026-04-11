@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "Spk",
+    defaultLocalization: "en",
     platforms: [
         .macOS(.v14)
     ],
@@ -19,7 +20,6 @@ let package = Package(
                 .product(name: "Yams", package: "Yams")
             ],
             path: "Sources/spk",
-            exclude: ["Resources"],
             resources: [
                 .process("Resources")
             ]
