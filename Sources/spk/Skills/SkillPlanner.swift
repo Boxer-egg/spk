@@ -30,13 +30,29 @@ class SkillPlanner {
     static func parseCalls(from jsonString: String) -> [SkillCall] {
         // Strip markdown code fences if present
         var cleaned = jsonString.trimmingCharacters(in: .whitespacesAndNewlines)
-        if cleaned.hasPrefix("```json"), let end = cleaned.range(of: "```", range: cleaned.index(cleaned.startIndex, offsetBy: 7)..<cleaned.endIndex) {
-            cleaned = String(cleaned[cleaned.index(cleaned.startIndex, offsetBy: 7)..<end.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines)
-        } else if cleaned.hasPrefix("```"), let end = cleaned.range(of: "```", range: cleaned.index(cleaned.startIndex, offsetBy: 3)..<cleaned.endIndex) {
-            cleaned = String(cleaned[cleaned.index(cleaned.startIndex, offsetBy: 3)..<end.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if cleaned.hasPrefix("```") {
+            // Remove the opening fence line (e.g., ```json or ```)
+            if let firstNewline = cleaned.firstIndex(of: "\n") {
+                cleaned = String(cleaned[firstNewline...].dropFirst())
+            } else {
+                cleaned = ""
+            }
         }
 
+        // Find the first closing fence and truncate from there
+        if let fenceRange = cleaned.range(of: "```") {
+            cleaned = String(cleaned[..<fenceRange.lowerBound])
+        }
+
+        cleaned = cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
+
         guard let data = cleaned.data(using: .utf8) else { return [] }
-        return (try? JSONDecoder().decode([SkillCall].self, from: data)) ?? []
+        do {
+            return try JSONDecoder().decode([SkillCall].self, from: data)
+        } catch {
+            print("SkillPlanner JSON decode error: \(error). Cleaned input: \(cleaned.prefix(200))")
+            return []
+        }
     }
 }

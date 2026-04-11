@@ -22,4 +22,18 @@ final class SkillPlannerTests: XCTestCase {
         let calls = SkillPlanner.parseCalls(from: "not json")
         XCTAssertTrue(calls.isEmpty)
     }
+
+    func testParseCallsWithPlainFences() {
+        let json = "```\n[{\"skill\":\"default_paste\",\"args\":{}}]\n```"
+        let calls = SkillPlanner.parseCalls(from: json)
+        XCTAssertEqual(calls.count, 1)
+        XCTAssertEqual(calls[0].skill, "default_paste")
+    }
+
+    func testParseCallsWithTrailingText() {
+        let json = "```json\n[{\"skill\":\"format_list\",\"args\":{}}]\n```\nHere is the plan."
+        let calls = SkillPlanner.parseCalls(from: json)
+        XCTAssertEqual(calls.count, 1)
+        XCTAssertEqual(calls[0].skill, "format_list")
+    }
 }
