@@ -1,0 +1,1 @@
+Reformat the user's text into a clear structured list. Use numbered lists (1., 2., 3.) if the items imply an order, otherwise use bullet points (-). Return ONLY the formatted list without additional commentary.

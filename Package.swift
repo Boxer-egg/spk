@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "Spk",
+    defaultLocalization: "en",
     platforms: [
         .macOS(.v14)
     ],
@@ -19,7 +20,18 @@ let package = Package(
                 .product(name: "Yams", package: "Yams")
             ],
             path: "Sources/spk",
-            exclude: ["Resources"]
+            exclude: ["Info.plist"],
+            resources: [
+                .process("Resources")
+            ]
+        ),
+        .testTarget(
+            name: "spkTests",
+            dependencies: ["Spk"],
+            path: "Tests/spkTests",
+            resources: [
+                .copy("Prompts")
+            ]
         )
     ]
 )

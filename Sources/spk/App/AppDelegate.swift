@@ -47,7 +47,32 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         setupEditMenu() // Enable Copy/Paste
         keyboardManager.delegate = self
         speechManager.delegate = self
-        
+
+        // Register skills
+        SkillRegistry.shared.register(DefaultPasteSkill())
+        SkillRegistry.shared.register(FormatListSkill())
+        SkillRegistry.shared.register(TranslateSkill())
+        SkillRegistry.shared.register(OpenBrowserSkill())
+        SkillRegistry.shared.register(OpenAppSkill())
+        SkillRegistry.shared.register(OpenFinderSkill())
+        SkillRegistry.shared.register(TypeTextSkill())
+        SkillRegistry.shared.register(PressKeySkill())
+
+        // Migrate old system_prompt.txt to default_paste.prompt if needed
+        let oldPromptURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/spk/system_prompt.txt")
+        let defaultPastePromptURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/spk/prompts/skills/default_paste.prompt")
+        if FileManager.default.fileExists(atPath: oldPromptURL.path) && !FileManager.default.fileExists(atPath: defaultPastePromptURL.path) {
+            try? FileManager.default.createDirectory(at: defaultPastePromptURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try? FileManager.default.copyItem(at: oldPromptURL, to: defaultPastePromptURL)
+        }
+
+        // Ensure user prompts directory exists and copy defaults if needed
+        PromptManager.shared.ensureUserPromptsDirectory()
+        PromptManager.shared.copyBundledPromptToUserDirectory(path: "planner.prompt")
+        PromptManager.shared.copyBundledPromptToUserDirectory(path: "skills/default_paste.prompt")
+        PromptManager.shared.copyBundledPromptToUserDirectory(path: "skills/format_list.prompt")
+        PromptManager.shared.copyBundledPromptToUserDirectory(path: "skills/translate.prompt")
+
         checkPermissions()
 
         let referenced = HistoryManager.shared.getEntries().compactMap { $0.audioFilename }
@@ -108,13 +133,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             item.state = (lang == SettingsManager.shared.selectedLanguage) ? .on : .off
             langMenu.addItem(item)
         }
-        let langMenuItem = NSMenuItem(title: NSLocalizedString("menu.language", comment: ""), action: nil, keyEquivalent: "")
+        let langMenuItem = NSMenuItem(title: localized("menu.language"), action: nil, keyEquivalent: "")
         langMenuItem.submenu = langMenu
         menu.addItem(langMenuItem)
 
         // History
         let historyMenu = NSMenu()
-        let historyMenuItem = NSMenuItem(title: NSLocalizedString("menu.history", comment: ""), action: nil, keyEquivalent: "")
+        let historyMenuItem = NSMenuItem(title: localized("menu.history"), action: nil, keyEquivalent: "")
         historyMenuItem.submenu = historyMenu
         menu.addItem(historyMenuItem)
         self.historyMenuItem = historyMenuItem
@@ -122,12 +147,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         menu.addItem(NSMenuItem.separator())
 
         // LLM Toggle
-        let llmToggle = NSMenuItem(title: NSLocalizedString("menu.llm", comment: ""), action: #selector(toggleLLM), keyEquivalent: "l")
+        let llmToggle = NSMenuItem(title: localized("menu.llm"), action: #selector(toggleLLM), keyEquivalent: "l")
         llmToggle.state = SettingsManager.shared.isLLMEnabled ? .on : .off
         menu.addItem(llmToggle)
 
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.settings", comment: ""), action: #selector(openSettings), keyEquivalent: ","))
+        menu.addItem(NSMenuItem(title: localized("menu.settings"), action: #selector(openSettings), keyEquivalent: ","))
 
         // Statistics Items
         let todayItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
@@ -144,13 +169,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
 
         // Input Device
         let deviceMenu = NSMenu()
-        let deviceMenuItem = NSMenuItem(title: NSLocalizedString("menu.inputDevice", comment: ""), action: nil, keyEquivalent: "")
+        let deviceMenuItem = NSMenuItem(title: localized("menu.inputDevice"), action: nil, keyEquivalent: "")
         deviceMenuItem.submenu = deviceMenu
         menu.addItem(deviceMenuItem)
         self.inputDeviceMenuItem = deviceMenuItem
 
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.quit", comment: ""), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        menu.addItem(NSMenuItem(title: localized("menu.quit"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         menu.delegate = self
         statusItem?.menu = menu
     }
@@ -171,14 +196,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     private func updateMenuStates() {
         if let menu = statusItem?.menu {
             // Update Language checkmarks
-            if let langMenuItem = menu.items.first(where: { $0.title == NSLocalizedString("menu.language", comment: "") }),
+            if let langMenuItem = menu.items.first(where: { $0.title == localized("menu.language") }),
                let langMenu = langMenuItem.submenu {
                 for item in langMenu.items {
                     item.state = (item.representedObject as? Language == SettingsManager.shared.selectedLanguage) ? .on : .off
                 }
             }
             // Update LLM Toggle checkmark
-            if let llmItem = menu.items.first(where: { $0.title == NSLocalizedString("menu.llm", comment: "") }) {
+            if let llmItem = menu.items.first(where: { $0.title == localized("menu.llm") }) {
                 llmItem.state = SettingsManager.shared.isLLMEnabled ? .on : .off
             }
         }
@@ -304,40 +329,57 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     
     func speechManager(_ manager: SpeechManager, didFinishWithText text: String) {
         hudShowWorkItem = nil
-        
+
         // If HUD was never visible (anti-misclick), don't process results
         guard isHudVisible else {
             isHudVisible = false
             return
         }
-        
+
         let wordCount = text.count
         statisticsTodayCount += 1
         statisticsTotalWords += wordCount
 
-        if SettingsManager.shared.isLLMEnabled {
-            HUDViewModel.shared.state = .refining
-            HUDViewModel.shared.text = text // Show original text while refining
-            updateMenuBarIcon(badgeColor: .systemBlue)
+        HUDViewModel.shared.state = .refining
+        HUDViewModel.shared.text = text
+        updateMenuBarIcon(badgeColor: .systemBlue)
 
-            LLMManager.shared.refineText(text) { result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let refined):
-                        HUDViewModel.shared.text = refined
-                        HUDViewModel.shared.state = .success
-                        ClipboardManager.shared.pasteText(refined, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
-                        HistoryManager.shared.addEntry(originalText: text, refinedText: refined, audioFilename: self.currentAudioFilename)
-                    case .failure(let error):
-                        print("LLM Error: \(error)")
-                        HUDViewModel.shared.state = .error
-                        ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
-                        HistoryManager.shared.addEntry(originalText: text, refinedText: nil, audioFilename: self.currentAudioFilename)
+        SkillPlanner.shared.plan(for: text) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let calls):
+                    SkillExecutor.shared.execute(calls: calls, originalText: text) { execResult in
+                        DispatchQueue.main.async {
+                            switch execResult {
+                            case .success(let finalText):
+                                HUDViewModel.shared.text = finalText
+                                HUDViewModel.shared.state = .success
+                                if finalText != text {
+                                    ClipboardManager.shared.pasteText(finalText, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
+                                }
+                                HistoryManager.shared.addEntry(originalText: text, refinedText: finalText != text ? finalText : nil, audioFilename: self.currentAudioFilename)
+                            case .failure(let error):
+                                print("Skill execution error: \(error)")
+                                HUDViewModel.shared.state = .error
+                                ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
+                                HistoryManager.shared.addEntry(originalText: text, refinedText: nil, audioFilename: self.currentAudioFilename)
+                            }
+                            self.currentAudioFilename = nil
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                HUDViewModel.shared.isVisible = false
+                                self.updateMenuBarIcon(badgeColor: nil)
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    HUDPanel.shared.hide()
+                                }
+                            }
+                        }
                     }
-
+                case .failure(let error):
+                    print("Planner error: \(error)")
+                    HUDViewModel.shared.state = .error
+                    ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
+                    HistoryManager.shared.addEntry(originalText: text, refinedText: nil, audioFilename: self.currentAudioFilename)
                     self.currentAudioFilename = nil
-
-                    // Delay hiding to let user see the final result
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         HUDViewModel.shared.isVisible = false
                         self.updateMenuBarIcon(badgeColor: nil)
@@ -347,16 +389,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                     }
                 }
             }
-        } else {
-            HUDViewModel.shared.state = .success
-            updateMenuBarIcon(badgeColor: nil)
-            ClipboardManager.shared.pasteText(text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
-            HistoryManager.shared.addEntry(originalText: text, refinedText: nil, audioFilename: self.currentAudioFilename)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                HUDViewModel.shared.isVisible = false
-                HUDPanel.shared.hide()
-            }
-            self.currentAudioFilename = nil
         }
     }
     
@@ -386,8 +418,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     func menuWillOpen(_ menu: NSMenu) {
         updateHistoryMenu()
         updateInputDeviceMenu()
-        statsTodayItem?.title = String(format: NSLocalizedString("menu.statistics.today", comment: ""), statisticsTodayCount)
-        statsWordsItem?.title = String(format: NSLocalizedString("menu.statistics.words", comment: ""), statisticsTotalWords)
+        statsTodayItem?.title = String(format: localized("menu.statistics.today"), statisticsTodayCount)
+        statsWordsItem?.title = String(format: localized("menu.statistics.words"), statisticsTotalWords)
     }
 
     private func updateInputDeviceMenu() {
@@ -395,7 +427,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         deviceMenu.removeAllItems()
 
         let devices = AudioDeviceManager.shared.enumerateInputDevices()
-        let systemDefaultItem = NSMenuItem(title: NSLocalizedString("menu.inputDevice.systemDefault", comment: ""), action: #selector(changeInputDevice(_:)), keyEquivalent: "")
+        let systemDefaultItem = NSMenuItem(title: localized("menu.inputDevice.systemDefault"), action: #selector(changeInputDevice(_:)), keyEquivalent: "")
         systemDefaultItem.representedObject = nil
         systemDefaultItem.state = SettingsManager.shared.selectedInputDeviceUID.isEmpty ? .on : .off
         deviceMenu.addItem(systemDefaultItem)
@@ -426,7 +458,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
 
         let entries = HistoryManager.shared.getEntries()
         if entries.isEmpty {
-            let item = NSMenuItem(title: NSLocalizedString("menu.history.empty", comment: ""), action: nil, keyEquivalent: "")
+            let item = NSMenuItem(title: localized("menu.history.empty"), action: nil, keyEquivalent: "")
             item.isEnabled = false
             historyMenu.addItem(item)
         } else {
@@ -453,15 +485,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                 item.representedObject = entry
 
                 let submenu = NSMenu()
-                let pasteItem = NSMenuItem(title: NSLocalizedString("menu.history.paste", comment: ""), action: #selector(pasteHistoryItem(_:)), keyEquivalent: "")
+                let pasteItem = NSMenuItem(title: localized("menu.history.paste"), action: #selector(pasteHistoryItem(_:)), keyEquivalent: "")
                 pasteItem.representedObject = entry
                 submenu.addItem(pasteItem)
 
-                let viewOriginalItem = NSMenuItem(title: NSLocalizedString("menu.history.viewOriginal", comment: ""), action: #selector(viewOriginalHistoryItem(_:)), keyEquivalent: "")
+                let viewOriginalItem = NSMenuItem(title: localized("menu.history.viewOriginal"), action: #selector(viewOriginalHistoryItem(_:)), keyEquivalent: "")
                 viewOriginalItem.representedObject = entry
                 submenu.addItem(viewOriginalItem)
 
-                let openAudioItem = NSMenuItem(title: NSLocalizedString("menu.history.openAudio", comment: ""), action: #selector(openHistoryAudio(_:)), keyEquivalent: "")
+                let openAudioItem = NSMenuItem(title: localized("menu.history.openAudio"), action: #selector(openHistoryAudio(_:)), keyEquivalent: "")
                 openAudioItem.representedObject = entry
                 if entry.audioFilename == nil {
                     openAudioItem.isEnabled = false
@@ -473,12 +505,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             }
             if entries.count > 10 {
                 historyMenu.addItem(NSMenuItem.separator())
-                let moreItem = NSMenuItem(title: String(format: NSLocalizedString("menu.history.more", comment: ""), entries.count - 10), action: nil, keyEquivalent: "")
+                let moreItem = NSMenuItem(title: String(format: localized("menu.history.more"), entries.count - 10), action: nil, keyEquivalent: "")
                 moreItem.isEnabled = false
                 historyMenu.addItem(moreItem)
             }
             historyMenu.addItem(NSMenuItem.separator())
-            let clearItem = NSMenuItem(title: NSLocalizedString("menu.history.clear", comment: ""), action: #selector(clearHistory(_:)), keyEquivalent: "")
+            let clearItem = NSMenuItem(title: localized("menu.history.clear"), action: #selector(clearHistory(_:)), keyEquivalent: "")
             historyMenu.addItem(clearItem)
         }
     }
@@ -501,12 +533,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
     @objc func viewOriginalHistoryItem(_ sender: NSMenuItem) {
         guard let entry = sender.representedObject as? HistoryEntry else { return }
         let alert = NSAlert()
-        alert.messageText = NSLocalizedString("menu.history.original.title", comment: "")
+        alert.messageText = localized("menu.history.original.title")
         alert.informativeText = entry.originalText
         alert.alertStyle = .informational
         // 复制按钮先添加，使其成为主按钮（蓝色）
-        alert.addButton(withTitle: NSLocalizedString("menu.history.original.copy", comment: ""))
-        alert.addButton(withTitle: NSLocalizedString("menu.history.original.close", comment: ""))
+        alert.addButton(withTitle: localized("menu.history.original.copy"))
+        alert.addButton(withTitle: localized("menu.history.original.close"))
         let response = alert.runModal()
         if response == .alertFirstButtonReturn {
             let pasteboard = NSPasteboard.general
@@ -517,11 +549,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
 
     @objc func clearHistory(_ sender: NSMenuItem?) {
         let alert = NSAlert()
-        alert.messageText = NSLocalizedString("menu.history.clear.title", comment: "")
-        alert.informativeText = NSLocalizedString("menu.history.clear.message", comment: "")
+        alert.messageText = localized("menu.history.clear.title")
+        alert.informativeText = localized("menu.history.clear.message")
         alert.alertStyle = .warning
-        alert.addButton(withTitle: NSLocalizedString("menu.history.clear.confirm", comment: ""))
-        alert.addButton(withTitle: NSLocalizedString("menu.history.clear.cancel", comment: ""))
+        alert.addButton(withTitle: localized("menu.history.clear.confirm"))
+        alert.addButton(withTitle: localized("menu.history.clear.cancel"))
         let response = alert.runModal()
         if response == .alertFirstButtonReturn {
             HistoryManager.shared.clearHistory()

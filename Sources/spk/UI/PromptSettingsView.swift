@@ -1,24 +1,27 @@
 import SwiftUI
 
 struct PromptSettingsView: View {
-    @ObservedObject var settings = SettingsManager.shared
+    @State private var promptText: String = ""
+    private var promptURL: URL {
+        URL(fileURLWithPath: NSString(string: SettingsManager.shared.defaultPastePromptPath).expandingTildeInPath)
+    }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text(NSLocalizedString("prompt.title", comment: ""))
+                Text(localized("prompt.title"))
                     .font(.title2)
                     .fontWeight(.semibold)
 
                 card {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(NSLocalizedString("prompt.system", comment: ""))
+                        Text("Default Paste Prompt")
                             .font(.system(size: 13, weight: .medium))
-                        Text(NSLocalizedString("prompt.subtitle", comment: ""))
+                        Text("This prompt is used when no specific skill matches your voice input.")
                             .font(.caption)
                             .foregroundColor(.secondary)
 
-                        TextEditor(text: $settings.systemPrompt)
+                        TextEditor(text: $promptText)
                             .frame(minHeight: 200)
                             .font(.system(size: 12, design: .monospaced))
                             .padding(6)
@@ -27,13 +30,16 @@ struct PromptSettingsView: View {
                                     .stroke(Color.secondary.opacity(0.25), lineWidth: 1)
                             )
                             .background(Color(nsColor: .textBackgroundColor).cornerRadius(6))
+                            .onChange(of: promptText) {
+                                savePrompt()
+                            }
                     }
                     .padding(14)
                 }
 
                 HStack {
                     Spacer()
-                    Text(NSLocalizedString("common.changesSaved", comment: ""))
+                    Text(localized("common.changesSaved"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Spacer()
@@ -43,6 +49,25 @@ struct PromptSettingsView: View {
                 Spacer(minLength: 20)
             }
             .padding(20)
+        }
+        .onAppear {
+            loadPrompt()
+        }
+    }
+
+    private func loadPrompt() {
+        if let content = PromptManager.shared.loadPrompt(for: "skills/default_paste.prompt") {
+            promptText = content
+        } else {
+            print("Failed to load default_paste prompt from user directory or bundle")
+        }
+    }
+
+    private func savePrompt() {
+        do {
+            try promptText.write(to: promptURL, atomically: true, encoding: .utf8)
+        } catch {
+            print("Failed to save prompt to \(promptURL.path): \(error)")
         }
     }
 

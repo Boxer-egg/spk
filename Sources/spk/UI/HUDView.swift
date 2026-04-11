@@ -12,7 +12,7 @@ struct HUDView: View {
                 } else if viewModel.state == .refining {
                     ProgressView()
                         .scaleEffect(0.8)
-                    Text(NSLocalizedString("hud.refining", comment: ""))
+                    Text(localized("hud.refining"))
                         .font(.system(size: 9, weight: .bold))
                         .foregroundColor(.accentColor)
                 } else if viewModel.state == .success {
@@ -32,7 +32,7 @@ struct HUDView: View {
             ScrollViewReader { proxy in
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 0) {
-                        Text(viewModel.text.isEmpty ? (viewModel.state == .listening ? NSLocalizedString("hud.listening", comment: "") : NSLocalizedString("hud.processing", comment: "")) : viewModel.text)
+                        Text(viewModel.text.isEmpty ? (viewModel.state == .listening ? localized("hud.listening") : localized("hud.processing")) : viewModel.text)
                             .font(.system(size: 15, weight: .medium, design: .rounded))
                             .lineSpacing(4)
                             .multilineTextAlignment(.leading)

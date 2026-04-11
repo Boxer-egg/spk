@@ -6,31 +6,31 @@ struct GeneralSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text(NSLocalizedString("general.title", comment: ""))
+                Text(localized("general.title"))
                     .font(.title2)
                     .fontWeight(.semibold)
 
                 card {
                     VStack(spacing: 0) {
                         toggleRow(
-                            title: NSLocalizedString("general.llm.title", comment: ""),
-                            subtitle: NSLocalizedString("general.llm.subtitle", comment: ""),
+                            title: localized("general.llm.title"),
+                            subtitle: localized("general.llm.subtitle"),
                             isOn: $settings.isLLMEnabled
                         )
 
                         Divider().padding(.leading, 12)
 
                         toggleRow(
-                            title: NSLocalizedString("general.clipboard.title", comment: ""),
-                            subtitle: NSLocalizedString("general.clipboard.subtitle", comment: ""),
+                            title: localized("general.clipboard.title"),
+                            subtitle: localized("general.clipboard.subtitle"),
                             isOn: $settings.isCopyToClipboardEnabled
                         )
 
                         Divider().padding(.leading, 12)
 
                         toggleRow(
-                            title: NSLocalizedString("general.history.title", comment: ""),
-                            subtitle: NSLocalizedString("general.history.subtitle", comment: ""),
+                            title: localized("general.history.title"),
+                            subtitle: localized("general.history.subtitle"),
                             isOn: $settings.isHistoryEnabled
                         )
 
@@ -39,9 +39,9 @@ struct GeneralSettingsView: View {
                                 Divider().padding(.leading, 12)
                                 HStack(alignment: .center, spacing: 12) {
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text(NSLocalizedString("general.history.audio.title", comment: ""))
+                                        Text(localized("general.history.audio.title"))
                                             .font(.system(size: 13, weight: .medium))
-                                        Text(NSLocalizedString("general.history.audio.subtitle", comment: ""))
+                                        Text(localized("general.history.audio.subtitle"))
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
@@ -58,8 +58,8 @@ struct GeneralSettingsView: View {
                         Divider().padding(.leading, 12)
 
                         toggleRow(
-                            title: NSLocalizedString("general.antimisclick.title", comment: ""),
-                            subtitle: NSLocalizedString("general.antimisclick.subtitle", comment: ""),
+                            title: localized("general.antimisclick.title"),
+                            subtitle: localized("general.antimisclick.subtitle"),
                             isOn: $settings.isAntiMisclickEnabled
                         )
                     }
@@ -67,7 +67,7 @@ struct GeneralSettingsView: View {
 
                 HStack {
                     Spacer()
-                    Text(NSLocalizedString("common.changesSaved", comment: ""))
+                    Text(localized("common.changesSaved"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Spacer()

@@ -5,10 +5,10 @@ enum SettingsTab: String, CaseIterable {
 
     var title: String {
         switch self {
-        case .general: return NSLocalizedString("settings.tab.general", comment: "")
-        case .api: return NSLocalizedString("settings.tab.api", comment: "")
-        case .prompt: return NSLocalizedString("settings.tab.prompt", comment: "")
-        case .shortcuts: return NSLocalizedString("settings.tab.shortcuts", comment: "")
+        case .general: return localized("settings.tab.general")
+        case .api: return localized("settings.tab.api")
+        case .prompt: return localized("settings.tab.prompt")
+        case .shortcuts: return localized("settings.tab.shortcuts")
         }
     }
 
@@ -32,7 +32,7 @@ struct SettingsView: View {
                 Text("Spk")
                     .font(.system(size: 13, weight: .bold))
                     .foregroundColor(.primary)
-                Text(NSLocalizedString("settings.title", comment: ""))
+                Text(localized("settings.title"))
                     .font(.system(size: 11))
                     .foregroundColor(.secondary)
                     .padding(.bottom, 12)
