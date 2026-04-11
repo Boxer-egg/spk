@@ -17,7 +17,7 @@ final class OpenBrowserSkill: Skill {
         if let urlString = args["url"], let url = URL(string: urlString) {
             NSWorkspace.shared.open(url)
         } else {
-            NSWorkspace.shared.open(URL(string: "about:blank")!)
+            NSWorkspace.shared.open(URL(string: "https://www.google.com")!)
         }
         completion(.success(()))
     }
