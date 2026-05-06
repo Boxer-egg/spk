@@ -21,6 +21,15 @@ class SpeechManager: NSObject {
         self.currentLanguage = language
     }
 
+    /// Pre-warms the audio engine so the first recording starts faster.
+    /// Call this after app launch or when the input device changes.
+    func prewarm() {
+        rebuildEngine()
+        AudioDeviceManager.shared.bindEngine(audioEngine, toDeviceUID: SettingsManager.shared.selectedInputDeviceUID)
+        _ = audioEngine.inputNode
+        audioEngine.prepare()
+    }
+
     func startRecording() throws {
         if currentProvider != nil {
             currentProvider?.stop()
@@ -29,19 +38,35 @@ class SpeechManager: NSObject {
 
         audioEngine.stop()
         audioEngine.inputNode.removeTap(onBus: 0)
+        rebuildEngine()
         AudioDeviceManager.shared.bindEngine(audioEngine, toDeviceUID: SettingsManager.shared.selectedInputDeviceUID)
 
         let provider: SpeechRecognitionProvider
-        if SettingsManager.shared.selectedSpeechProvider == "doubao" {
+        switch SettingsManager.shared.selectedSpeechProvider {
+        case "doubao":
             provider = DoubaoProvider()
-        } else {
+        case "tongyi":
+            provider = TongyiProvider()
+        case "whisper":
+            provider = WhisperProvider()
+        case "whisperkit":
+            provider = WhisperKitProvider()
+        default:
             provider = AppleSpeechProvider()
         }
         provider.delegate = self
         currentProvider = provider
 
+        // Whisper needs an audio file for upload
+        if SettingsManager.shared.selectedSpeechProvider == "whisper" {
+            _ = AudioRecorderManager.shared.startRecording()
+        }
+
         let inputNode = audioEngine.inputNode
-        let recordingFormat = inputNode.outputFormat(forBus: 0)
+        let recordingFormat = inputNode.inputFormat(forBus: 0)
+        guard recordingFormat.sampleRate > 0, recordingFormat.channelCount > 0 else {
+            throw SpeechManagerError.noInputAvailable
+        }
 
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [weak self] (buffer, when) in
             self?.updateVolume(from: buffer)
@@ -49,18 +74,21 @@ class SpeechManager: NSObject {
 
         audioEngine.prepare()
         do {
-            try audioEngine.start()
+            try startEngineWithTimeout()
         } catch {
             audioEngine.inputNode.removeTap(onBus: 0)
-            audioEngine = AVAudioEngine()
+            rebuildEngine()
             AudioDeviceManager.shared.bindEngine(audioEngine, toDeviceUID: SettingsManager.shared.selectedInputDeviceUID)
             let fallbackNode = audioEngine.inputNode
-            let fallbackFormat = fallbackNode.outputFormat(forBus: 0)
+            let fallbackFormat = fallbackNode.inputFormat(forBus: 0)
+            guard fallbackFormat.sampleRate > 0, fallbackFormat.channelCount > 0 else {
+                throw SpeechManagerError.noInputAvailable
+            }
             fallbackNode.installTap(onBus: 0, bufferSize: 1024, format: fallbackFormat) { [weak self] (buffer, when) in
                 self?.updateVolume(from: buffer)
             }
             audioEngine.prepare()
-            try audioEngine.start()
+            try startEngineWithTimeout()
         }
 
         try provider.start(audioEngine: audioEngine)
@@ -70,6 +98,43 @@ class SpeechManager: NSObject {
         currentProvider?.stop()
         audioEngine.stop()
         audioEngine.inputNode.removeTap(onBus: 0)
+    }
+
+    /// Rebuilds the audio engine so inputNode picks up the new device's format.
+    /// Call this after changing the microphone selection.
+    private func rebuildEngine() {
+        audioEngine.stop()
+        audioEngine = AVAudioEngine()
+    }
+
+    /// Starts the audio engine on a background thread with a timeout.
+    /// Prevents indefinite main-thread hang when CoreAudio's HAL proxy
+    /// blocks after a device route change (see koe missuo/koe#77).
+    private func startEngineWithTimeout(timeout: TimeInterval = 3.0) throws {
+        let engine = self.audioEngine
+        let semaphore = DispatchSemaphore(value: 0)
+        var startError: Error?
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                try engine.start()
+            } catch {
+                startError = error
+            }
+            semaphore.signal()
+        }
+
+        let result = semaphore.wait(timeout: .now() + timeout)
+        if result == .timedOut {
+            DispatchQueue.global(qos: .default).async {
+                engine.stop()
+            }
+            throw SpeechManagerError.engineStartTimeout
+        }
+
+        if let error = startError {
+            throw error
+        }
     }
 
     private func updateVolume(from buffer: AVAudioPCMBuffer) {
@@ -100,5 +165,19 @@ extension SpeechManager: SpeechRecognitionProviderDelegate {
     func provider(_ provider: SpeechRecognitionProvider, didFailWithError error: Error) {
         delegate?.speechManager(self, didFailWithError: error)
         currentProvider = nil
+    }
+}
+
+enum SpeechManagerError: Error, LocalizedError {
+    case noInputAvailable
+    case engineStartTimeout
+
+    var errorDescription: String? {
+        switch self {
+        case .noInputAvailable:
+            return "No audio input device available."
+        case .engineStartTimeout:
+            return "Audio engine start timed out. The input device may be busy or disconnected."
+        }
     }
 }

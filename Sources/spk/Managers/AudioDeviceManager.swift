@@ -71,22 +71,31 @@ class AudioDeviceManager {
     // MARK: - Private helpers
 
     private func bindEngineToDevice(_ engine: AVAudioEngine, deviceID: AudioDeviceID) -> Bool {
-        let sel = NSSelectorFromString("setDevice:")
-        guard engine.responds(to: sel) else { return false }
-        // setDevice: takes an AudioDeviceID (UInt32). Wrapping in NSNumber
-        // works because the runtime often boxes/unboxes; if it fails, we fall back.
-        engine.perform(sel, with: NSNumber(value: deviceID))
-        return true
+        guard let audioUnit = engine.inputNode.audioUnit else { return false }
+        var devID = deviceID
+        let status = AudioUnitSetProperty(
+            audioUnit,
+            kAudioOutputUnitProperty_CurrentDevice,
+            kAudioUnitScope_Global,
+            0,
+            &devID,
+            UInt32(MemoryLayout<AudioDeviceID>.size)
+        )
+        return status == noErr
     }
 
     private func clearEngineBinding(_ engine: AVAudioEngine) -> Bool {
-        let sel = NSSelectorFromString("setDevice:")
-        if engine.responds(to: sel) {
-            // Passing 0 (kAudioObjectUnknown) usually reverts to default device
-            engine.perform(sel, with: NSNumber(value: 0))
-            return true
-        }
-        return false
+        guard let audioUnit = engine.inputNode.audioUnit else { return false }
+        var devID = AudioDeviceID(0)
+        let status = AudioUnitSetProperty(
+            audioUnit,
+            kAudioOutputUnitProperty_CurrentDevice,
+            kAudioUnitScope_Global,
+            0,
+            &devID,
+            UInt32(MemoryLayout<AudioDeviceID>.size)
+        )
+        return status == noErr
     }
 
     private func setDefaultInputDevice(deviceID: AudioDeviceID) -> Bool {
@@ -144,5 +153,60 @@ class AudioDeviceManager {
             mem.withMemoryRebound(to: AudioBufferList.self, capacity: 1) { $0 }
         )
         return abl.reduce(0) { $0 + $1.mNumberChannels }
+    }
+
+    // MARK: - Device Change Observation
+
+    private var deviceChangeCallback: (() -> Void)?
+    private let observerQueue = DispatchQueue(label: "spk.audio-device-observer")
+    private var isObserving = false
+    private var devicesAddress = AudioObjectPropertyAddress(
+        mSelector: kAudioHardwarePropertyDevices,
+        mScope: kAudioObjectPropertyScopeGlobal,
+        mElement: kAudioObjectPropertyElementMain
+    )
+    private var defaultInputAddress = AudioObjectPropertyAddress(
+        mSelector: kAudioHardwarePropertyDefaultInputDevice,
+        mScope: kAudioObjectPropertyScopeGlobal,
+        mElement: kAudioObjectPropertyElementMain
+    )
+    private lazy var listenerBlock: AudioObjectPropertyListenerBlock = { [weak self] _, _ in
+        guard let self = self else { return }
+        DispatchQueue.main.async {
+            self.deviceChangeCallback?()
+        }
+    }
+
+    func startListeningForDeviceChanges(onChange: @escaping () -> Void) {
+        guard !isObserving else { return }
+        deviceChangeCallback = onChange
+
+        let systemObject = AudioObjectID(kAudioObjectSystemObject)
+        let devicesStatus = AudioObjectAddPropertyListenerBlock(
+            systemObject, &devicesAddress, observerQueue, listenerBlock
+        )
+        let defaultInputStatus = AudioObjectAddPropertyListenerBlock(
+            systemObject, &defaultInputAddress, observerQueue, listenerBlock
+        )
+
+        guard devicesStatus == noErr, defaultInputStatus == noErr else {
+            if devicesStatus == noErr {
+                AudioObjectRemovePropertyListenerBlock(systemObject, &devicesAddress, observerQueue, listenerBlock)
+            }
+            if defaultInputStatus == noErr {
+                AudioObjectRemovePropertyListenerBlock(systemObject, &defaultInputAddress, observerQueue, listenerBlock)
+            }
+            return
+        }
+        isObserving = true
+    }
+
+    func stopListeningForDeviceChanges() {
+        guard isObserving else { return }
+        let systemObject = AudioObjectID(kAudioObjectSystemObject)
+        AudioObjectRemovePropertyListenerBlock(systemObject, &devicesAddress, observerQueue, listenerBlock)
+        AudioObjectRemovePropertyListenerBlock(systemObject, &defaultInputAddress, observerQueue, listenerBlock)
+        isObserving = false
+        deviceChangeCallback = nil
     }
 }

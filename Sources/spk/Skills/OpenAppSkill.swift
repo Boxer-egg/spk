@@ -83,15 +83,6 @@ final class OpenAppSkill: Skill {
             return
         }
 
-        if let path = NSWorkspace.shared.fullPath(forApplication: appName) {
-            let url = URL(fileURLWithPath: path)
-            NSWorkspace.shared.openApplication(
-                at: url, configuration: NSWorkspace.OpenConfiguration()
-            ) { _, _ in }
-            completion(.success(()))
-            return
-        }
-
         // Fallback: use local Spotlight (mdfind) to resolve Chinese/display names like 滴答清单 -> TickTick
         Self.findAppViaSpotlight(named: appName) { url in
             if let url = url {

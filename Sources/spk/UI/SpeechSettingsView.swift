@@ -18,6 +18,9 @@ struct SpeechSettingsView: View {
                         Picker("", selection: $settings.selectedSpeechProvider) {
                             Text("Apple Speech").tag("apple")
                             Text("豆包 (ByteDance)").tag("doubao")
+                            Text("通义 (Alibaba)").tag("tongyi")
+                            Text("Whisper (OpenAI)").tag("whisper")
+                            Text("WhisperKit (本地)").tag("whisperkit")
                         }
                         .pickerStyle(.menu)
                     }
@@ -46,6 +49,44 @@ struct SpeechSettingsView: View {
                         }
                         .padding(14)
                     }
+                }
+
+                if settings.selectedSpeechProvider == "tongyi" {
+                    card {
+                        VStack(alignment: .leading, spacing: 14) {
+                            Text("通义语音识别配置")
+                                .font(.system(size: 13, weight: .medium))
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("API Key")
+                                    .font(.system(size: 12))
+                                SecureField("", text: $settings.tongyiApiKey)
+                                    .textFieldStyle(.roundedBorder)
+                            }
+                        }
+                        .padding(14)
+                    }
+                }
+
+                if settings.selectedSpeechProvider == "whisper" {
+                    card {
+                        VStack(alignment: .leading, spacing: 14) {
+                            Text("Whisper 语音识别配置")
+                                .font(.system(size: 13, weight: .medium))
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("API Key")
+                                    .font(.system(size: 12))
+                                SecureField("", text: $settings.whisperApiKey)
+                                    .textFieldStyle(.roundedBorder)
+                            }
+                        }
+                        .padding(14)
+                    }
+                }
+
+                if settings.selectedSpeechProvider == "whisperkit" {
+                    WhisperKitSettingsView()
                 }
 
                 HStack {

@@ -3,6 +3,7 @@
 "settings.tab.general" = "通用";
 "settings.tab.api" = "API";
 "settings.tab.prompt" = "提示词";
+"settings.tab.speech" = "语音识别";
 "settings.tab.shortcuts" = "快捷键";
 
 /* GeneralSettingsView */
@@ -78,3 +79,7 @@
 "hud.listening" = "正在倾听...";
 "hud.processing" = "处理中...";
 "hud.refining" = "正在润色...";
+
+/* SpeechSettingsView */
+"speech.title" = "语音识别";
+"speech.engine.title" = "识别引擎";

@@ -18,4 +18,14 @@ enum Language: String, CaseIterable, Identifiable {
         case .koKR: return "한국어"
         }
     }
+
+    /// ISO 639-1 language code for WhisperKit.
+    var whisperLanguageCode: String? {
+        switch self {
+        case .zhCN, .zhTW: return "zh"
+        case .enUS: return "en"
+        case .jaJP: return "ja"
+        case .koKR: return "ko"
+        }
+    }
 }

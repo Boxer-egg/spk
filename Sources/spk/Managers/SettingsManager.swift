@@ -105,6 +105,18 @@ class SettingsManager: ObservableObject {
         didSet { config["doubaoAccessToken"] = doubaoAccessToken; saveConfig() }
     }
 
+    @Published var tongyiApiKey: String {
+        didSet { config["tongyiApiKey"] = tongyiApiKey; saveConfig() }
+    }
+
+    @Published var whisperApiKey: String {
+        didSet { config["whisperApiKey"] = whisperApiKey; saveConfig() }
+    }
+
+    @Published var whisperKitModelName: String {
+        didSet { config["whisperKitModelName"] = whisperKitModelName; saveConfig() }
+    }
+
     @Published var isAntiMisclickEnabled: Bool {
         didSet {
             config["isAntiMisclickEnabled"] = isAntiMisclickEnabled
@@ -150,6 +162,9 @@ class SettingsManager: ObservableObject {
         self.selectedSpeechProvider = config["selectedSpeechProvider"] as? String ?? "apple"
         self.doubaoAppId = config["doubaoAppId"] as? String ?? ""
         self.doubaoAccessToken = config["doubaoAccessToken"] as? String ?? ""
+        self.tongyiApiKey = config["tongyiApiKey"] as? String ?? ""
+        self.whisperApiKey = config["whisperApiKey"] as? String ?? ""
+        self.whisperKitModelName = config["whisperKitModelName"] as? String ?? "openai_whisper-small"
 
         // 确保配置字典包含当前值（用于首次运行）
         config["isLLMEnabled"] = isLLMEnabled
@@ -169,6 +184,9 @@ class SettingsManager: ObservableObject {
         config["selectedSpeechProvider"] = selectedSpeechProvider
         config["doubaoAppId"] = doubaoAppId
         config["doubaoAccessToken"] = doubaoAccessToken
+        config["tongyiApiKey"] = tongyiApiKey
+        config["whisperApiKey"] = whisperApiKey
+        config["whisperKitModelName"] = whisperKitModelName
 
         // 保存初始配置
         saveConfig()

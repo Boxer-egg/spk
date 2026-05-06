@@ -3,6 +3,7 @@
 "settings.tab.general" = "General";
 "settings.tab.api" = "API";
 "settings.tab.prompt" = "Indicación";
+"settings.tab.speech" = "Speech";
 "settings.tab.shortcuts" = "Atajos";
 
 /* GeneralSettingsView */
@@ -70,3 +71,7 @@
 "menu.history.original.title" = "Texto original";
 "menu.history.original.copy" = "Copiar";
 "menu.history.original.close" = "Cerrar";
+
+/* SpeechSettingsView */
+"speech.title" = "Reconocimiento de voz";
+"speech.engine.title" = "Motor de reconocimiento";

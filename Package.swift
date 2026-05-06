@@ -11,13 +11,15 @@ let package = Package(
         .executable(name: "Spk", targets: ["Spk"])
     ],
     dependencies: [
-        .package(url: "https://github.com/jpsim/Yams.git", from: "5.0.0")
+        .package(url: "https://github.com/jpsim/Yams.git", from: "5.0.0"),
+        .package(url: "https://github.com/argmaxinc/WhisperKit.git", from: "0.12.0")
     ],
     targets: [
         .executableTarget(
             name: "Spk",
             dependencies: [
-                .product(name: "Yams", package: "Yams")
+                .product(name: "Yams", package: "Yams"),
+                .product(name: "WhisperKit", package: "WhisperKit")
             ],
             path: "Sources/spk",
             exclude: ["Info.plist"],

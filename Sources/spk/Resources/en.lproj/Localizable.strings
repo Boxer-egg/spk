@@ -3,6 +3,7 @@
 "settings.tab.general" = "General";
 "settings.tab.api" = "API";
 "settings.tab.prompt" = "Prompt";
+"settings.tab.speech" = "Speech";
 "settings.tab.shortcuts" = "Shortcuts";
 
 /* GeneralSettingsView */
@@ -77,3 +78,7 @@
 "hud.listening" = "Listening...";
 "hud.processing" = "Processing...";
 "hud.refining" = "Refining...";
+
+/* SpeechSettingsView */
+"speech.title" = "Speech Recognition";
+"speech.engine.title" = "Recognition Engine";

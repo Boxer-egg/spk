@@ -3,6 +3,7 @@
 "settings.tab.general" = "Général";
 "settings.tab.api" = "API";
 "settings.tab.prompt" = "Invite";
+"settings.tab.speech" = "Speech";
 "settings.tab.shortcuts" = "Raccourcis";
 
 /* GeneralSettingsView */
@@ -70,3 +71,7 @@
 "menu.history.original.title" = "Texte original";
 "menu.history.original.copy" = "Copier";
 "menu.history.original.close" = "Fermer";
+
+/* SpeechSettingsView */
+"speech.title" = "Reconnaissance vocale";
+"speech.engine.title" = "Moteur de reconnaissance";

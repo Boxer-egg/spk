@@ -3,6 +3,7 @@
 "settings.tab.general" = "一般";
 "settings.tab.api" = "API";
 "settings.tab.prompt" = "プロンプト";
+"settings.tab.speech" = "Speech";
 "settings.tab.shortcuts" = "ショートカット";
 
 /* GeneralSettingsView */
@@ -70,3 +71,7 @@
 "menu.history.original.title" = "元の内容";
 "menu.history.original.copy" = "コピー";
 "menu.history.original.close" = "閉じる";
+
+/* SpeechSettingsView */
+"speech.title" = "音声認識";
+"speech.engine.title" = "認識エンジン";

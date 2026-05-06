@@ -90,6 +90,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
 
         // Initial language
         speechManager.setLanguage(SettingsManager.shared.selectedLanguage)
+        speechManager.prewarm()
+
+        // Pre-load WhisperKit model if selected
+        if SettingsManager.shared.selectedSpeechProvider == "whisperkit" {
+            Task {
+                await WhisperKitModelManager.shared.loadModel(name: SettingsManager.shared.whisperKitModelName)
+            }
+        }
 
         // Subscribe to settings changes so menu bar stays in sync with the settings window
         SettingsManager.shared.$isLLMEnabled
@@ -98,6 +106,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                 self?.updateMenuStates()
             }
             .store(in: &cancellables)
+
+        SettingsManager.shared.$selectedInputDeviceUID
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.speechManager.prewarm()
+            }
+            .store(in: &cancellables)
+
+        AudioDeviceManager.shared.startListeningForDeviceChanges { [weak self] in
+            self?.updateInputDeviceMenu()
+            self?.speechManager.prewarm()
+        }
     }
 
     private func checkPermissions() {
