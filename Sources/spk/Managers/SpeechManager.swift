@@ -9,105 +9,69 @@ protocol SpeechManagerDelegate: AnyObject {
     func speechManager(_ manager: SpeechManager, didFailWithError error: Error)
 }
 
-class SpeechManager: NSObject, SFSpeechRecognizerDelegate {
+class SpeechManager: NSObject {
     weak var delegate: SpeechManagerDelegate?
-    
-    private var speechRecognizer: SFSpeechRecognizer?
-    private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
-    private var recognitionTask: SFSpeechRecognitionTask?
+
+    private var currentProvider: SpeechRecognitionProvider?
     private var audioEngine = AVAudioEngine()
-    
-    private var currentLanguage: Language = .zhCN {
-        didSet {
-            speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: currentLanguage.rawValue))
-            speechRecognizer?.delegate = self
-        }
-    }
-    
-    override init() {
-        super.init()
-        self.speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: currentLanguage.rawValue))
-        self.speechRecognizer?.delegate = self
-    }
-    
+
+    private var currentLanguage: Language = .zhCN
+
     func setLanguage(_ language: Language) {
         self.currentLanguage = language
     }
-    
+
     func startRecording() throws {
-        // Cancel previous task
-        if recognitionTask != nil {
-            recognitionTask?.cancel()
-            recognitionTask = nil
+        if currentProvider != nil {
+            currentProvider?.stop()
+            currentProvider = nil
         }
 
-        // Bind to selected input device
         audioEngine.stop()
         audioEngine.inputNode.removeTap(onBus: 0)
         AudioDeviceManager.shared.bindEngine(audioEngine, toDeviceUID: SettingsManager.shared.selectedInputDeviceUID)
 
-        recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
-        guard let recognitionRequest = recognitionRequest else {
-            fatalError("Unable to create a SFSpeechAudioBufferRecognitionRequest object")
+        let provider: SpeechRecognitionProvider
+        if SettingsManager.shared.selectedSpeechProvider == "doubao" {
+            provider = DoubaoProvider()
+        } else {
+            provider = AppleSpeechProvider()
         }
-
-        recognitionRequest.shouldReportPartialResults = true
+        provider.delegate = self
+        currentProvider = provider
 
         let inputNode = audioEngine.inputNode
         let recordingFormat = inputNode.outputFormat(forBus: 0)
 
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer, when) in
-            self.recognitionRequest?.append(buffer)
-            self.updateVolume(from: buffer)
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [weak self] (buffer, when) in
+            self?.updateVolume(from: buffer)
         }
 
         audioEngine.prepare()
         do {
             try audioEngine.start()
         } catch {
-            // Fallback: recreate engine and retry once
             audioEngine.inputNode.removeTap(onBus: 0)
             audioEngine = AVAudioEngine()
             AudioDeviceManager.shared.bindEngine(audioEngine, toDeviceUID: SettingsManager.shared.selectedInputDeviceUID)
             let fallbackNode = audioEngine.inputNode
             let fallbackFormat = fallbackNode.outputFormat(forBus: 0)
-            fallbackNode.installTap(onBus: 0, bufferSize: 1024, format: fallbackFormat) { (buffer, when) in
-                self.recognitionRequest?.append(buffer)
-                self.updateVolume(from: buffer)
+            fallbackNode.installTap(onBus: 0, bufferSize: 1024, format: fallbackFormat) { [weak self] (buffer, when) in
+                self?.updateVolume(from: buffer)
             }
             audioEngine.prepare()
             try audioEngine.start()
         }
 
-        recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest) { result, error in
-            var isFinal = false
-            
-            if let result = result {
-                self.delegate?.speechManager(self, didUpdateText: result.bestTranscription.formattedString)
-                isFinal = result.isFinal
-            }
-            
-            if error != nil || isFinal {
-                self.audioEngine.stop()
-                inputNode.removeTap(onBus: 0)
-                
-                self.recognitionRequest = nil
-                self.recognitionTask = nil
-                
-                if let result = result {
-                    self.delegate?.speechManager(self, didFinishWithText: result.bestTranscription.formattedString)
-                } else if let error = error {
-                    self.delegate?.speechManager(self, didFailWithError: error)
-                }
-            }
-        }
+        try provider.start(audioEngine: audioEngine)
     }
-    
+
     func stopRecording() {
+        currentProvider?.stop()
         audioEngine.stop()
-        recognitionRequest?.endAudio()
+        audioEngine.inputNode.removeTap(onBus: 0)
     }
-    
+
     private func updateVolume(from buffer: AVAudioPCMBuffer) {
         guard let channelData = buffer.floatChannelData?[0] else { return }
         let frameLength = UInt(buffer.frameLength)
@@ -116,15 +80,25 @@ class SpeechManager: NSObject, SFSpeechRecognizerDelegate {
             sum += channelData[i] * channelData[i]
         }
         let rms = sqrt(sum / Float(frameLength))
-        // Normalize RMS to 0..1 roughly (adjust sensitivity)
-        let normalized = min(1.0, rms * 5.0) 
+        let normalized = min(1.0, rms * 5.0)
         DispatchQueue.main.async {
             self.delegate?.speechManager(self, didUpdateVolume: normalized)
         }
     }
-    
-    // MARK: - SFSpeechRecognizerDelegate
-    func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {
-        // Handle availability
+}
+
+extension SpeechManager: SpeechRecognitionProviderDelegate {
+    func provider(_ provider: SpeechRecognitionProvider, didUpdateText text: String) {
+        delegate?.speechManager(self, didUpdateText: text)
+    }
+
+    func provider(_ provider: SpeechRecognitionProvider, didFinishWithText text: String) {
+        delegate?.speechManager(self, didFinishWithText: text)
+        currentProvider = nil
+    }
+
+    func provider(_ provider: SpeechRecognitionProvider, didFailWithError error: Error) {
+        delegate?.speechManager(self, didFailWithError: error)
+        currentProvider = nil
     }
 }

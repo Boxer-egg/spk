@@ -1,11 +1,12 @@
 import SwiftUI
 
 enum SettingsTab: String, CaseIterable {
-    case general, api
+    case general, speech, api
 
     var title: String {
         switch self {
         case .general: return localized("settings.tab.general")
+        case .speech: return localized("settings.tab.speech")
         case .api: return localized("settings.tab.api")
         }
     }
@@ -13,6 +14,7 @@ enum SettingsTab: String, CaseIterable {
     var icon: String {
         switch self {
         case .general: return "gearshape.fill"
+        case .speech: return "waveform"
         case .api: return "network"
         }
     }
@@ -71,6 +73,8 @@ struct SettingsView: View {
                 switch selectedTab {
                 case .general:
                     GeneralSettingsView()
+                case .speech:
+                    SpeechSettingsView()
                 case .api:
                     APISettingsView()
                 }

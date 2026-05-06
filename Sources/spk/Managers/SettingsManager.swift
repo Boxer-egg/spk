@@ -89,6 +89,22 @@ class SettingsManager: ObservableObject {
         }
     }
 
+    // MARK: - Speech Recognition
+    @Published var selectedSpeechProvider: String {
+        didSet {
+            config["selectedSpeechProvider"] = selectedSpeechProvider
+            saveConfig()
+        }
+    }
+
+    @Published var doubaoAppId: String {
+        didSet { config["doubaoAppId"] = doubaoAppId; saveConfig() }
+    }
+
+    @Published var doubaoAccessToken: String {
+        didSet { config["doubaoAccessToken"] = doubaoAccessToken; saveConfig() }
+    }
+
     @Published var isAntiMisclickEnabled: Bool {
         didSet {
             config["isAntiMisclickEnabled"] = isAntiMisclickEnabled
@@ -130,6 +146,11 @@ class SettingsManager: ObservableObject {
         self.isAntiMisclickEnabled = (config["isAntiMisclickEnabled"] as? Bool) ?? true
         self.antiMisclickDelay = (config["antiMisclickDelay"] as? Double) ?? 0.25
 
+        // Speech Recognition
+        self.selectedSpeechProvider = config["selectedSpeechProvider"] as? String ?? "apple"
+        self.doubaoAppId = config["doubaoAppId"] as? String ?? ""
+        self.doubaoAccessToken = config["doubaoAccessToken"] as? String ?? ""
+
         // 确保配置字典包含当前值（用于首次运行）
         config["isLLMEnabled"] = isLLMEnabled
         config["isCopyToClipboardEnabled"] = isCopyToClipboardEnabled
@@ -145,6 +166,9 @@ class SettingsManager: ObservableObject {
         config["selectedInputDeviceUID"] = selectedInputDeviceUID
         config["isAntiMisclickEnabled"] = isAntiMisclickEnabled
         config["antiMisclickDelay"] = antiMisclickDelay
+        config["selectedSpeechProvider"] = selectedSpeechProvider
+        config["doubaoAppId"] = doubaoAppId
+        config["doubaoAccessToken"] = doubaoAccessToken
 
         // 保存初始配置
         saveConfig()

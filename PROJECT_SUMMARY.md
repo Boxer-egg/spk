@@ -38,6 +38,6 @@
 - **Security:** No hardcoded secrets. All sensitive data is stored in local `UserDefaults`.
 
 ## Project History
-- **Initial:** Project "koe" (renamed to "Spk").
+- **Initial:** Project prototype (renamed to "Spk").
 - **Batch 2-3:** Added multi-line HUD, waveform animations, and tabbed settings.
 - **Batch 4 (Final):** Simplified shortcuts, refined HUD status area, and implemented full state synchronization.
