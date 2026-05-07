@@ -37,8 +37,8 @@ final class WhisperKitModelManager: ObservableObject {
 
     private init() {}
 
-    func loadModel(name: String) async {
-        guard whisperKit == nil || currentModelName != name || state != .ready else {
+    func loadModel(name: String, force: Bool = false) async {
+        guard force || whisperKit == nil || currentModelName != name || state != .ready else {
             return
         }
 
@@ -127,6 +127,10 @@ final class WhisperKitModelManager: ObservableObject {
             cleaned = cleaned.replacingOccurrences(of: artifact, with: "")
         }
         return cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    static func isModelDownloaded(name: String) -> Bool {
+        return modelIsCached(name: name)
     }
 
     private static func modelIsCached(name: String) -> Bool {

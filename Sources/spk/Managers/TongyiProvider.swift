@@ -31,13 +31,12 @@ class TongyiProvider: SpeechRecognitionProvider {
         isRunning = true
         receiveMessages()
 
-        let inputNode = audioEngine.inputNode
-        let recordingFormat = inputNode.outputFormat(forBus: 0)
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [weak self] (buffer, when) in
-            guard let self = self, self.isRunning else { return }
-            if let pcmData = self.convertToPCM16(buffer) {
-                self.webSocketTask?.send(.data(pcmData)) { _ in }
-            }
+    }
+
+    func consumeAudioBuffer(_ buffer: AVAudioPCMBuffer) {
+        guard isRunning else { return }
+        if let pcmData = convertToPCM16(buffer) {
+            webSocketTask?.send(.data(pcmData)) { _ in }
         }
     }
 

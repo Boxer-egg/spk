@@ -68,9 +68,7 @@ class SpeechManager: NSObject {
             throw SpeechManagerError.noInputAvailable
         }
 
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [weak self] (buffer, when) in
-            self?.updateVolume(from: buffer)
-        }
+        installInputTap(on: inputNode, format: recordingFormat)
 
         audioEngine.prepare()
         do {
@@ -84,9 +82,7 @@ class SpeechManager: NSObject {
             guard fallbackFormat.sampleRate > 0, fallbackFormat.channelCount > 0 else {
                 throw SpeechManagerError.noInputAvailable
             }
-            fallbackNode.installTap(onBus: 0, bufferSize: 1024, format: fallbackFormat) { [weak self] (buffer, when) in
-                self?.updateVolume(from: buffer)
-            }
+            installInputTap(on: fallbackNode, format: fallbackFormat)
             audioEngine.prepare()
             try startEngineWithTimeout()
         }
@@ -105,6 +101,14 @@ class SpeechManager: NSObject {
     private func rebuildEngine() {
         audioEngine.stop()
         audioEngine = AVAudioEngine()
+    }
+
+    private func installInputTap(on inputNode: AVAudioInputNode, format: AVAudioFormat) {
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, _ in
+            guard let self else { return }
+            self.updateVolume(from: buffer)
+            self.currentProvider?.consumeAudioBuffer(buffer)
+        }
     }
 
     /// Starts the audio engine on a background thread with a timeout.

@@ -4,7 +4,12 @@ import AVFoundation
 protocol SpeechRecognitionProvider: AnyObject {
     var delegate: SpeechRecognitionProviderDelegate? { get set }
     func start(audioEngine: AVAudioEngine) throws
+    func consumeAudioBuffer(_ buffer: AVAudioPCMBuffer)
     func stop()
+}
+
+extension SpeechRecognitionProvider {
+    func consumeAudioBuffer(_ buffer: AVAudioPCMBuffer) {}
 }
 
 protocol SpeechRecognitionProviderDelegate: AnyObject {

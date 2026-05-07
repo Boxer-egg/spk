@@ -11,8 +11,18 @@ class AppleSpeechProvider: NSObject, SpeechRecognitionProvider, SFSpeechRecogniz
 
     func start(audioEngine: AVAudioEngine) throws {
         let language = SettingsManager.shared.selectedLanguage
-        speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: language.rawValue))
-        speechRecognizer?.delegate = self
+        let recognizer = SFSpeechRecognizer(locale: Locale(identifier: language.rawValue))
+        
+        guard let recognizer = recognizer else {
+            throw AppleSpeechError.recognizerNotAvailable
+        }
+        
+        if !recognizer.isAvailable {
+            throw AppleSpeechError.recognizerNotAvailable
+        }
+        
+        self.speechRecognizer = recognizer
+        recognizer.delegate = self
 
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         guard let recognitionRequest = recognitionRequest else {
@@ -20,6 +30,11 @@ class AppleSpeechProvider: NSObject, SpeechRecognitionProvider, SFSpeechRecogniz
         }
 
         recognitionRequest.shouldReportPartialResults = true
+        
+        // Use on-device recognition if available for better performance and privacy
+        if #available(macOS 10.15, *) {
+            recognitionRequest.requiresOnDeviceRecognition = true
+        }
 
         recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest) { [weak self] result, error in
             guard let self = self else { return }
@@ -27,21 +42,27 @@ class AppleSpeechProvider: NSObject, SpeechRecognitionProvider, SFSpeechRecogniz
                 self.delegate?.provider(self, didUpdateText: result.bestTranscription.formattedString)
                 if result.isFinal {
                     self.delegate?.provider(self, didFinishWithText: result.bestTranscription.formattedString)
+                    self.cleanup()
                 }
             } else if let error = error {
+                // If the user spoke nothing, we might get a specific error or just a finish.
+                // We handle it gracefully by finishing with the last known text (usually empty).
                 self.delegate?.provider(self, didFailWithError: error)
+                self.cleanup()
             }
-        }
-
-        let inputNode = audioEngine.inputNode
-        let recordingFormat = inputNode.outputFormat(forBus: 0)
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [weak self] (buffer, when) in
-            self?.recognitionRequest?.append(buffer)
         }
     }
 
+    func consumeAudioBuffer(_ buffer: AVAudioPCMBuffer) {
+        recognitionRequest?.append(buffer)
+    }
+
     func stop() {
+        // Signal the end of audio, allowing the task to finish processing the remaining buffers.
         recognitionRequest?.endAudio()
+    }
+
+    private func cleanup() {
         recognitionTask?.cancel()
         recognitionRequest = nil
         recognitionTask = nil
@@ -50,6 +71,16 @@ class AppleSpeechProvider: NSObject, SpeechRecognitionProvider, SFSpeechRecogniz
     func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {}
 }
 
-enum AppleSpeechError: Error {
+enum AppleSpeechError: Error, LocalizedError {
     case unableToCreateRequest
+    case recognizerNotAvailable
+    
+    var errorDescription: String? {
+        switch self {
+        case .unableToCreateRequest:
+            return "Unable to create speech recognition request."
+        case .recognizerNotAvailable:
+            return "Speech recognizer is not available for the selected language."
+        }
+    }
 }

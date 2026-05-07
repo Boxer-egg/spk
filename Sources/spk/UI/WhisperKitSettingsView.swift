@@ -12,15 +12,34 @@ struct WhisperKitSettingsView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("模型选择")
                     .font(.system(size: 12))
-                Picker("", selection: $settings.whisperKitModelName) {
-                    ForEach(WhisperKitModelManager.availableModels, id: \.name) { model in
-                        Text("\(model.label)").tag(model.name)
+                HStack {
+                    Picker("", selection: $settings.whisperKitModelName) {
+                        ForEach(WhisperKitModelManager.availableModels, id: \.name) { model in
+                            Text("\(model.label)").tag(model.name)
+                        }
                     }
-                }
-                .pickerStyle(.menu)
-                .onChange(of: settings.whisperKitModelName) { _, newName in
-                    Task {
-                        await modelManager.loadModel(name: newName)
+                    .pickerStyle(.menu)
+                    .labelsHidden()
+                    
+                    if !WhisperKitModelManager.isModelDownloaded(name: settings.whisperKitModelName) {
+                        Button(action: {
+                            Task {
+                                await modelManager.loadModel(name: settings.whisperKitModelName)
+                            }
+                        }) {
+                            Label("下载", systemImage: "icloud.and.arrow.down")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(modelManager.state == .loading)
+                    } else if modelManager.state != .ready {
+                        Button(action: {
+                            Task {
+                                await modelManager.loadModel(name: settings.whisperKitModelName)
+                            }
+                        }) {
+                            Label("加载", systemImage: "arrow.clockwise")
+                        }
+                        .disabled(modelManager.state == .loading)
                     }
                 }
             }
@@ -46,11 +65,6 @@ struct WhisperKitSettingsView: View {
         .padding(14)
         .background(Color(nsColor: .controlBackgroundColor))
         .cornerRadius(12)
-        .onAppear {
-            Task {
-                await modelManager.loadModel(name: settings.whisperKitModelName)
-            }
-        }
     }
 }
 

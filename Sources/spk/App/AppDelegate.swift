@@ -92,13 +92,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         speechManager.setLanguage(SettingsManager.shared.selectedLanguage)
         speechManager.prewarm()
 
-        // Pre-load WhisperKit model if selected
-        if SettingsManager.shared.selectedSpeechProvider == "whisperkit" {
-            Task {
-                await WhisperKitModelManager.shared.loadModel(name: SettingsManager.shared.whisperKitModelName)
-            }
-        }
-
         // Subscribe to settings changes so menu bar stays in sync with the settings window
         SettingsManager.shared.$isLLMEnabled
             .receive(on: DispatchQueue.main)
@@ -370,6 +363,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         }
 
         // Normal flow
+        HUDViewModel.shared.state = .processing
         speechManager.stopRecording()
         if SettingsManager.shared.isHistoryAudioEnabled {
             _ = AudioRecorderManager.shared.stopRecording()
@@ -426,6 +420,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                                     audioFilename: self.currentAudioFilename)
                             case .failure(let error):
                                 print("Skill execution error: \(error)")
+                                HUDViewModel.shared.text = error.localizedDescription
                                 HUDViewModel.shared.state = .error
                                 ClipboardManager.shared.pasteText(
                                     text,
@@ -447,6 +442,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
                     }
                 case .failure(let error):
                     print("Planner error: \(error)")
+                    HUDViewModel.shared.text = error.localizedDescription
                     HUDViewModel.shared.state = .error
                     ClipboardManager.shared.pasteText(
                         text, keepInClipboard: SettingsManager.shared.isCopyToClipboardEnabled)
@@ -476,6 +472,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         }
 
         print("Speech Error: \(error)")
+        HUDViewModel.shared.text = error.localizedDescription
         HUDViewModel.shared.state = .error
         updateMenuBarIcon(badgeColor: nil)
         if SettingsManager.shared.isHistoryAudioEnabled {

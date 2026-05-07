@@ -14,23 +14,17 @@ class WhisperKitProvider: SpeechRecognitionProvider {
     private var cachedSourceFormat: AVAudioFormat?
 
     func start(audioEngine: AVAudioEngine) throws {
-        guard WhisperKitModelManager.shared.isReady else {
-            throw WhisperKitProviderError.modelNotReady
-        }
-
         isRunning = true
         audioBuffer = []
 
-        let inputNode = audioEngine.inputNode
-        let hwFormat = inputNode.inputFormat(forBus: 0)
+    }
 
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: hwFormat) { [weak self] buffer, _ in
-            guard let self = self, self.isRunning else { return }
-            guard let converted = self.convert(buffer: buffer) else { return }
-            self.bufferLock.lock()
-            self.audioBuffer.append(contentsOf: converted)
-            self.bufferLock.unlock()
-        }
+    func consumeAudioBuffer(_ buffer: AVAudioPCMBuffer) {
+        guard isRunning else { return }
+        guard let converted = convert(buffer: buffer) else { return }
+        bufferLock.lock()
+        audioBuffer.append(contentsOf: converted)
+        bufferLock.unlock()
     }
 
     func stop() {

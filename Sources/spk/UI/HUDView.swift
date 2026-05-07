@@ -9,12 +9,13 @@ struct HUDView: View {
             VStack(spacing: 8) {
                 if viewModel.state == .listening {
                     WaveformView(volume: viewModel.volume)
-                } else if viewModel.state == .refining {
+                } else if viewModel.state == .processing || viewModel.state == .refining {
                     ProgressView()
                         .scaleEffect(0.8)
-                    Text(localized("hud.refining"))
+                    Text(viewModel.state == .processing ? localized("hud.processing") : localized("hud.refining"))
                         .font(.system(size: 9, weight: .bold))
                         .foregroundColor(.accentColor)
+                        .multilineTextAlignment(.center)
                 } else if viewModel.state == .success {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.green)

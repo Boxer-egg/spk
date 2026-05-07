@@ -3,6 +3,7 @@ import Combine
 
 enum HUDState {
     case listening
+    case processing
     case refining
     case success
     case error
