@@ -60,8 +60,9 @@ class AudioDeviceManager {
             if bindEngineToDevice(engine, deviceID: device.id) {
                 return true
             }
-            // Fallback: change system default input device
-            return setDefaultInputDevice(deviceID: device.id)
+            // Do NOT fallback to changing system default input device,
+            // as that affects all applications globally.
+            return false
         } else {
             // empty means system default; clear custom binding
             return clearEngineBinding(engine)

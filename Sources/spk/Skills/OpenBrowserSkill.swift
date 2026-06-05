@@ -14,11 +14,18 @@ final class OpenBrowserSkill: Skill {
     }
 
     func execute(context: SkillContext, args: [String: String], completion: @escaping (Result<Void, Error>) -> Void) {
-        if let urlString = args["url"], let url = URL(string: urlString) {
-            NSWorkspace.shared.open(url)
+        let targetURL: URL
+        if let urlString = args["url"], let url = URL(string: urlString), Self.isAllowedURL(url) {
+            targetURL = url
         } else {
-            NSWorkspace.shared.open(URL(string: "https://www.google.com")!)
+            targetURL = URL(string: "https://www.google.com")!
         }
+        NSWorkspace.shared.open(targetURL)
         completion(.success(()))
+    }
+
+    private static func isAllowedURL(_ url: URL) -> Bool {
+        guard let scheme = url.scheme?.lowercased() else { return false }
+        return scheme == "http" || scheme == "https"
     }
 }

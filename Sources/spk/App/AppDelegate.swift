@@ -300,7 +300,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
 
         // Start engine immediately to avoid missing audio
         if SettingsManager.shared.isHistoryAudioEnabled {
-            if let url = AudioRecorderManager.shared.startRecording() {
+            if let url = AudioRecorderManager.shared.startRecording(identifier: "history") {
                 currentAudioFilename = url.lastPathComponent
             }
         }
@@ -351,7 +351,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             // Anti-misclick triggered: short press, HUD was never shown
             speechManager.stopRecording()  // This will trigger didFinishWithText, we need to ignore it there
             if SettingsManager.shared.isHistoryAudioEnabled {
-                _ = AudioRecorderManager.shared.stopRecording()
+                _ = AudioRecorderManager.shared.stopRecording(identifier: "history")
                 if let filename = currentAudioFilename {
                     let url = AudioRecorderManager.shared.urlForAudio(named: filename)
                     try? FileManager.default.removeItem(at: url)
@@ -366,7 +366,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
         HUDViewModel.shared.state = .processing
         speechManager.stopRecording()
         if SettingsManager.shared.isHistoryAudioEnabled {
-            _ = AudioRecorderManager.shared.stopRecording()
+            _ = AudioRecorderManager.shared.stopRecording(identifier: "history")
         }
     }
 

@@ -18,9 +18,11 @@ final class SkillPlannerTests: XCTestCase {
         XCTAssertEqual(calls[0].skill, "default_paste")
     }
 
-    func testParseCallsInvalidJSONReturnsEmpty() {
+    func testParseCallsInvalidJSONReturnsDefaultPasteFallback() {
         let calls = SkillPlanner.parseCalls(from: "not json")
-        XCTAssertTrue(calls.isEmpty)
+        XCTAssertEqual(calls.count, 1)
+        XCTAssertEqual(calls[0].skill, "default_paste")
+        XCTAssertEqual(calls[0].args["refined_text"], "not json")
     }
 
     func testParseCallsWithPlainFences() {

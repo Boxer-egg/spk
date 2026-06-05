@@ -59,7 +59,7 @@ class SpeechManager: NSObject {
 
         // Whisper needs an audio file for upload
         if SettingsManager.shared.selectedSpeechProvider == "whisper" {
-            _ = AudioRecorderManager.shared.startRecording()
+            _ = AudioRecorderManager.shared.startRecording(identifier: "whisper")
         }
 
         let inputNode = audioEngine.inputNode

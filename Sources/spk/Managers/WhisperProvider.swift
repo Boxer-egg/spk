@@ -14,7 +14,7 @@ class WhisperProvider: SpeechRecognitionProvider {
     func stop() {
         uploadTask?.cancel()
 
-        guard let audioURL = AudioRecorderManager.shared.stopRecording() else {
+        guard let audioURL = AudioRecorderManager.shared.stopRecording(identifier: "whisper") else {
             delegate?.provider(self, didFailWithError: WhisperError.noAudioData)
             return
         }
@@ -56,6 +56,11 @@ class WhisperProvider: SpeechRecognitionProvider {
         request.httpBody = body
 
         uploadTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            // Clean up the temporary audio file regardless of success or failure
+            defer {
+                try? FileManager.default.removeItem(at: url)
+            }
+
             if let error = error {
                 completion(.failure(error))
                 return

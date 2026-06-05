@@ -9,12 +9,14 @@ protocol KeyboardManagerDelegate: AnyObject {
 class KeyboardManager {
     weak var delegate: KeyboardManagerDelegate?
     private var eventTap: CFMachPort?
-    
+
     private let fnKeyCode: CGKeyCode = 63
     private let leftCtrlCode: CGKeyCode = 59
     private let leftOptionCode: CGKeyCode = 58
     private let rightOptionCode: CGKeyCode = 61
-    
+
+    var pressedKeys = Set<CGKeyCode>()
+
     init() {
         setupEventTap()
     }
@@ -54,38 +56,57 @@ class KeyboardManager {
         }
     }
     
-    private func handleFlagsChanged(_ event: CGEvent) {
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+    // Internal for testability
+    func handleFlagsChanged(_ event: CGEvent) {
+        let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
         let flags = event.flags
         let settings = SettingsManager.shared
-        
+
         // Match chosen key
         let isMatch: Bool
-        let isPressed: Bool
-        
+        let isPressedFromFlags: Bool?
+
         switch settings.triggerKey {
         case "Fn":
-            isMatch = keyCode == Int64(fnKeyCode)
-            isPressed = flags.rawValue & 0x800000 != 0
+            isMatch = keyCode == fnKeyCode
+            isPressedFromFlags = flags.rawValue & 0x800000 != 0
         case "Left Ctrl":
-            isMatch = keyCode == Int64(leftCtrlCode)
-            isPressed = flags.contains(.maskControl)
+            isMatch = keyCode == leftCtrlCode
+            isPressedFromFlags = flags.contains(.maskControl)
         case "Left Option":
-            isMatch = keyCode == Int64(leftOptionCode)
-            isPressed = flags.contains(.maskAlternate)
+            isMatch = keyCode == leftOptionCode
+            isPressedFromFlags = flags.contains(.maskAlternate)
         case "Right Option":
-            isMatch = keyCode == Int64(rightOptionCode)
-            isPressed = flags.contains(.maskAlternate) // macOS doesn't easily distinguish L/R Option in flags alone, but keycode helps
+            isMatch = keyCode == rightOptionCode
+            isPressedFromFlags = nil // Cannot distinguish L/R Option from flags alone
         default:
             return
         }
-        
-        if isMatch {
-            if settings.isHoldToSpeak {
-                delegate?.triggerPressed(down: isPressed)
-            } else if isPressed {
-                delegate?.triggerToggled()
-            }
+
+        guard isMatch else { return }
+
+        let wasPressed = pressedKeys.contains(keyCode)
+
+        // For Option keys (L/R), macOS flagsChanged event itself indicates a state toggle
+        // because we cannot distinguish them via flags. For Fn and Ctrl, we can trust flags.
+        let isPressed: Bool
+        if let isPressedFromFlags = isPressedFromFlags {
+            isPressed = isPressedFromFlags
+            guard isPressed != wasPressed else { return }
+        } else {
+            isPressed = !wasPressed
+        }
+
+        if isPressed {
+            pressedKeys.insert(keyCode)
+        } else {
+            pressedKeys.remove(keyCode)
+        }
+
+        if settings.isHoldToSpeak {
+            delegate?.triggerPressed(down: isPressed)
+        } else if isPressed {
+            delegate?.triggerToggled()
         }
     }
 }

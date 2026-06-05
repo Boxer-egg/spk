@@ -8,6 +8,7 @@ class AppleSpeechProvider: NSObject, SpeechRecognitionProvider, SFSpeechRecogniz
     private var speechRecognizer: SFSpeechRecognizer?
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
+    var isStoppingIntentionally = false
 
     func start(audioEngine: AVAudioEngine) throws {
         let language = SettingsManager.shared.selectedLanguage
@@ -45,9 +46,12 @@ class AppleSpeechProvider: NSObject, SpeechRecognitionProvider, SFSpeechRecogniz
                     self.cleanup()
                 }
             } else if let error = error {
-                // If the user spoke nothing, we might get a specific error or just a finish.
-                // We handle it gracefully by finishing with the last known text (usually empty).
-                self.delegate?.provider(self, didFailWithError: error)
+                if self.isStoppingIntentionally {
+                    // User intentionally stopped recording; treat as normal finish.
+                    self.delegate?.provider(self, didFinishWithText: "")
+                } else {
+                    self.delegate?.provider(self, didFailWithError: error)
+                }
                 self.cleanup()
             }
         }
@@ -58,14 +62,17 @@ class AppleSpeechProvider: NSObject, SpeechRecognitionProvider, SFSpeechRecogniz
     }
 
     func stop() {
+        isStoppingIntentionally = true
         // Signal the end of audio, allowing the task to finish processing the remaining buffers.
         recognitionRequest?.endAudio()
     }
 
-    private func cleanup() {
+    // Internal for testability
+    func cleanup() {
         recognitionTask?.cancel()
         recognitionRequest = nil
         recognitionTask = nil
+        isStoppingIntentionally = false
     }
 
     func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {}

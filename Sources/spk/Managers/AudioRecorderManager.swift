@@ -4,8 +4,9 @@ import AVFoundation
 class AudioRecorderManager {
     static let shared = AudioRecorderManager()
 
-    private var recorder: AVAudioRecorder?
-    private var currentURL: URL?
+    private var recorders: [String: AVAudioRecorder] = [:]
+    private var currentURLs: [String: URL] = [:]
+    private let lock = NSLock()
 
     private let tapeDirectoryURL: URL
 
@@ -16,10 +17,13 @@ class AudioRecorderManager {
         try? FileManager.default.createDirectory(at: tapeDirectoryURL, withIntermediateDirectories: true, attributes: nil)
     }
 
-    func startRecording() -> URL? {
-        guard recorder == nil else { return nil }
+    func startRecording(identifier: String = "default") -> URL? {
+        lock.lock()
+        defer { lock.unlock() }
 
-        let filename = "\(UUID().uuidString).m4a"
+        guard recorders[identifier] == nil else { return nil }
+
+        let filename = "\(identifier)_\(UUID().uuidString).m4a"
         let url = tapeDirectoryURL.appendingPathComponent(filename)
 
         let settings: [String: Any] = [
@@ -37,8 +41,8 @@ class AudioRecorderManager {
                 try? FileManager.default.removeItem(at: url)
                 return nil
             }
-            self.recorder = recorder
-            self.currentURL = url
+            self.recorders[identifier] = recorder
+            self.currentURLs[identifier] = url
             return url
         } catch {
             print("Failed to start audio recording: \(error)")
@@ -47,13 +51,26 @@ class AudioRecorderManager {
         }
     }
 
-    func stopRecording() -> URL? {
-        guard recorder != nil else { return nil }
-        recorder?.stop()
-        let url = currentURL
-        recorder = nil
-        currentURL = nil
+    func stopRecording(identifier: String = "default") -> URL? {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard let recorder = recorders[identifier] else { return nil }
+        recorder.stop()
+        let url = currentURLs[identifier]
+        recorders.removeValue(forKey: identifier)
+        currentURLs.removeValue(forKey: identifier)
         return url
+    }
+
+    func stopAllRecordings() {
+        lock.lock()
+        defer { lock.unlock() }
+        for (_, recorder) in recorders {
+            recorder.stop()
+        }
+        recorders.removeAll()
+        currentURLs.removeAll()
     }
 
     func urlForAudio(named filename: String) -> URL {
