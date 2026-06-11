@@ -388,7 +388,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, KeyboardManagerDelegate, Spe
             return
         }
 
-        let wordCount = text.count
+        let wordCount = text.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }.count
         statisticsTodayCount += 1
         statisticsTotalWords += wordCount
 

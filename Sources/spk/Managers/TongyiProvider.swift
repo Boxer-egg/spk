@@ -63,7 +63,9 @@ class TongyiProvider: SpeechRecognitionProvider {
                 @unknown default:
                     break
                 }
-                self.receiveMessages()
+                if self.isRunning {
+                    self.receiveMessages()
+                }
             case .failure(let error):
                 self.delegate?.provider(self, didFailWithError: error)
             }

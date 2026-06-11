@@ -83,6 +83,8 @@ class WhisperKitProvider: SpeechRecognitionProvider {
     }
 
     private func converter(for sourceFormat: AVAudioFormat) -> AVAudioConverter? {
+        bufferLock.lock()
+        defer { bufferLock.unlock() }
         if let cachedConverter = cachedConverter,
            let cachedSourceFormat = cachedSourceFormat,
            cachedSourceFormat.sampleRate == sourceFormat.sampleRate,

@@ -23,7 +23,8 @@ class ClipboardManager {
 
         let changeCountAfterSet = pasteboard.changeCount
 
-        DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) {
+        // simulateCommandV posts CGEvents which must be sent from main thread
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.simulateCommandV()
 
             if !keepInClipboard {
@@ -45,7 +46,7 @@ class ClipboardManager {
     ) {
         let delay = TimeInterval(attempt) * 1.0
 
-        DispatchQueue.global().asyncAfter(deadline: .now() + delay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             // If the user manually copied something in between, changeCount will have changed.
             // Do NOT overwrite their clipboard in that case.
             guard pasteboard.changeCount == changeCountAfterSet else {

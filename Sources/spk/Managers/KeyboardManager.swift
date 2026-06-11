@@ -21,16 +21,28 @@ class KeyboardManager {
         setupEventTap()
     }
 
+    deinit {
+        if let tap = eventTap {
+            CGEvent.tapEnable(tap: tap, enable: false)
+        }
+        // Balance the passRetained call made in setupEventTap
+        Unmanaged.passRetained(self).release()
+    }
+
     private func setupEventTap() {
         let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
         let isAppTrusted = AXIsProcessTrustedWithOptions(options as CFDictionary)
-        
+
         if !isAppTrusted {
             print("ERROR: Application is not trusted for Accessibility.")
         }
 
         let eventMask = (1 << CGEventType.flagsChanged.rawValue)
-        
+
+        // passRetained increments the retain count so the callback never sees a dangling pointer.
+        // The matching release is in deinit.
+        let retained = Unmanaged.passRetained(self).toOpaque()
+
         eventTap = CGEvent.tapCreate(
             tap: .cghidEventTap,
             place: .headInsertEventTap,
@@ -39,20 +51,23 @@ class KeyboardManager {
             callback: { (proxy, type, event, refcon) -> Unmanaged<CGEvent>? in
                 guard let refcon = refcon else { return Unmanaged.passRetained(event) }
                 let manager = Unmanaged<KeyboardManager>.fromOpaque(refcon).takeUnretainedValue()
-                
+
                 if type == .flagsChanged {
                     manager.handleFlagsChanged(event)
                 }
-                
+
                 return Unmanaged.passRetained(event)
             },
-            userInfo: UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
+            userInfo: retained
         )
 
         if let eventTap = eventTap {
             let runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, eventTap, 0)
             CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, .commonModes)
             CGEvent.tapEnable(tap: eventTap, enable: true)
+        } else {
+            // Release the retain since the tap was never created
+            Unmanaged.passUnretained(self).release()
         }
     }
     
